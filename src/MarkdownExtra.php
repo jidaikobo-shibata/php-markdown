@@ -59,7 +59,7 @@ class MarkdownExtra extends BaseMarkdownExtra
         $text .= "<thead>\n";
         $text .= "<tr>\n";
         foreach ($headers as $n => $header) {
-            $text .= "  <th$attr[$n]>" . $this->runSpanGamut(trim($header)) . "</th>\n";
+            $text .= "  <th$attr[$n] scope=\"col\">" . $this->runSpanGamut(trim($header)) . "</th>\n";
         }
         $text .= "</tr>\n";
         $text .= "</thead>\n";
@@ -74,7 +74,7 @@ class MarkdownExtra extends BaseMarkdownExtra
             $row = $this->parseSpan($row);
 
             if (strpos(trim($row), ':') === 0) {
-              $caption = "<caption>" . $this->runSpanGamut(trim(ltrim($row, ':'))) . "</caption>\n";
+              $caption = "<caption>" . $this->runSpanGamut(trim(ltrim($row, ':'))) . "</caption>";
               continue;
             }
 
@@ -85,7 +85,7 @@ class MarkdownExtra extends BaseMarkdownExtra
             $text .= "<tr>\n";
             foreach ($row_cells as $n => $cell) {
                 if (substr(trim($cell), -1) === ':') {
-                    $text .= "  <th scope=\"row\">" . $this->runSpanGamut(trim(rtrim($cell, ':'))) . "</th>\n";
+                    $text .= "  <th$attr[$n] scope=\"row\">" . $this->runSpanGamut(trim(rtrim($cell, ':'))) . "</th>\n";
                 } else {
                     $text .= "  <td$attr[$n]>" . $this->runSpanGamut(trim($cell)) . "</td>\n";
                 }
