@@ -1,9 +1,8 @@
-[![MIT](https://custom-icon-badges.herokuapp.com/badge/license-MIT-8BB80A.svg?logo=law&logoColor=white)]()
+[![MIT](https://custom-icon-badges.herokuapp.com/badge/license-MIT-8BB80A.svg?logo=law&logoColor=white)](https://github.com/jidaikobo-shibata/php-markdown?tab=MIT-1-ov-file)
+
 # jidaikobo/php-markdown
 
 A few additions to the popular [michelf/php-markdown](https://github.com/michelf/php-markdown). This library provides custom enhancements and overrides to the original Markdown parser, tailored for specific needs.
-
----
 
 ## Installation
 
@@ -12,8 +11,6 @@ Install via Composer:
 ```bash
 composer require jidaikobo/php-markdown
 ```
-
----
 
 ## Usage
 
@@ -66,17 +63,13 @@ If the last row of the table starts with a colon (:), it will be treated as a `c
 |: This is a caption for the table.
 ```
 
----
-
 ## Requirements
 
 - PHP 7.4 or higher
 
----
-
 ## License
 
-This project is licensed under the [MIT License](https://opensource.org/licenses/MIT), see the [LICENSE file](https://github.com/jidaikobo-shibata/log/tree/main?tab=MIT-1-ov-file) for details
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT), see the [LICENSE file](https://github.com/jidaikobo-shibata/php-markdown?tab=MIT-1-ov-file) for details
 
 ## Author
 
@@ -84,9 +77,8 @@ This project is licensed under the [MIT License](https://opensource.org/licenses
 
 ## Link
 
-- preparing
-
----
+- [jidaikobo/php-markdown - Packagist](https://packagist.org/packages/jidaikobo/php-markdown)
+- [jidaikobo-shibata/php-markdown - GitHub](https://github.com/jidaikobo-shibata/php-markdown)
 
 ## Acknowledgements
 
