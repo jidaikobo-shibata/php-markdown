@@ -16,7 +16,7 @@ Trait FigcaptionTrait
     protected function processFigures($text)
     {
         // Regex pattern to match images followed by captions
-        $pattern = '/!\[([^\]]*)\]\(([^)]+)\)\n\*([^\*]+)\*/';
+        $pattern = '/!\[([^\]]*)\]\(([^)]+)\)\s*\r?\n\s*\*([^\*]+)\*/m';
 
         // Callback to replace matches with figure elements
         return preg_replace_callback($pattern, function ($matches) {
