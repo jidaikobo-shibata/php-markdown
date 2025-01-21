@@ -57,7 +57,11 @@ Trait TableTrait
         $text .= "<thead>\n";
         $text .= "<tr>\n";
         foreach ($headers as $n => $header) {
-            $text .= "  <th$attr[$n] scope=\"col\">" . $this->runSpanGamut(trim($header)) . "</th>\n";
+            if (substr(trim($header), -1) === ':') {
+                $text .= "  <th$attr[$n] scope=\"row\">" . $this->runSpanGamut(trim(rtrim($header, ':'))) . "</th>\n";
+            } else {
+                $text .= "  <th$attr[$n] scope=\"col\">" . $this->runSpanGamut(trim($header)) . "</th>\n";
+            }
         }
         $text .= "</tr>\n";
         $text .= "</thead>\n";
