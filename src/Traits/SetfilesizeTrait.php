@@ -32,6 +32,11 @@ Trait SetfilesizeTrait
             $url = preg_replace('/^<(.*)>$/', '\1', $unhashed);
         }
 
+        // 絶対パスの場合にURLを補完
+        if (strpos($url, '/') === 0 && self::$targetUrl) {
+            $url = rtrim(self::$targetUrl, '/') . $url;
+        }
+
         // 特定のURLを処理
         if (self::$targetUrl && strpos($url, self::$targetUrl) === 0) {
             $relativePath = str_replace(self::$targetUrl, '', $url);
