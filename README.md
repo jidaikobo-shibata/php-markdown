@@ -29,6 +29,11 @@ $table = "
 | Row 1   :| Cell 1   |
 | Row 2   :| Cell 2   |
 |:capt.
+
+
+| scope row:| scope col |
+|-----------|-----------|
+| Row 1    :| Row2      |
 ";
 
 $html = MarkdownExtra::defaultTransform($table);
@@ -51,6 +56,15 @@ By adding a colon (:) at the end of a cell, you can mark it as a row header (`th
 | Bob     :| 25  | San Francisco |
 ```
 
+You can change the scope of `th` to row by adding a colon (:) to the end of the header cell:
+
+```markdown
+| Values  :| Age | City       |
+|----------|-----|------------|
+| Alice   :| 30  | New York   |
+| Bob     :| 25  | San Francisco |
+```
+
 #### 2. Table Captions
 
 If the last row of the table starts with a colon (:), it will be treated as a `caption`:
@@ -61,6 +75,40 @@ If the last row of the table starts with a colon (:), it will be treated as a `c
 | Alice   | 30  | New York      |
 | Bob     | 25  | San Francisco |
 |: This is a caption for the table.
+```
+
+#### 3. Add file type and size to Link text
+
+When the link destination is a file, the file type and file size are added to the link string.
+Sets the relationship between a URL and a path on the server.
+
+```php
+MarkdownExtra::setTargetUrl('https://example.com');
+MarkdownExtra::setReplacePath('/var/www/public_html/example.com');
+```
+
+```markdown
+[link text](https://example.com/files/example.zip)
+```
+
+```HTML
+<a href="https://example.com/files/example.zip">link text (zip, 1.2MB)</a>
+```
+
+#### 4. figcaption
+
+The image and em notation are arranged side by side without line breaks.
+
+```markdown
+![](https://example.com/files/example.jpg)
+*caption*
+```
+
+```HTML
+<figure>
+![](https://example.com/files/example.jpg)
+<figcaption>caption</figcaption>
+</figure>
 ```
 
 ## Requirements
