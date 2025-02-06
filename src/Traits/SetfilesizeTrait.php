@@ -50,8 +50,12 @@ Trait SetfilesizeTrait
                 // 拡張子を取得
                 $extension = pathinfo($localPath, PATHINFO_EXTENSION);
 
-                // リンクテキストに拡張子とサイズを追加
-                $link_text .= " ({$extension}, {$sizeText})";
+                // 画像は除外する
+                if (!in_array($extension, ['png', 'jpg', 'jpeg', 'jpe', 'gif', 'bmp', 'tif', 'tiff', 'ico'])) {
+                    // リンクテキストに拡張子とサイズを追加
+                    $link_text .= " ({$extension}, {$sizeText})";
+                }
+
             }
         }
 
