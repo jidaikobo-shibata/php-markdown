@@ -43,7 +43,7 @@ Trait SetfilesizeTrait
             $localPath = self::$replacePath . $relativePath;
 
             // ファイルが存在する場合はファイルサイズを取得
-            if (file_exists($localPath) && is_readable($localPath)) {
+            if (file_exists($localPath) && is_file($localPath) && is_readable($localPath)) {
                 $size = filesize($localPath);
                 $sizeText = $this->formatFileSize($size);
 
