@@ -29,3 +29,11 @@
   未実施。
 - 未完了: PHP_CodeSnifferのセキュリティ勧告への対応。
 - 次にやるとよいこと: 勧告対応後に依存整理版をリリースする。
+
+### Security dependency update
+
+- PHP_CodeSnifferを3.13.6へ更新し、`composer.json` に修正版の下限を明記。
+- `composer audit` は勧告0件、PHPStan level 5は正常。
+- PHPCS全体実行では既存のコードスタイル違反を検出。
+- 未完了: 既存のコードスタイル違反。
+- 次にやるとよいこと: コードスタイル修正は挙動変更と分離して実施する。
