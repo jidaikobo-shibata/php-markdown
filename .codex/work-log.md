@@ -107,6 +107,9 @@
   PHP 7.4以降のPHPCompatibility検査を整備した。
 - `composer archive` の内容を確認し、混入していたローカルの `vendor/`、ログ、
   旧 `public/` などを配布アーカイブから除外する設定を追加した。
+- コミット済みHEADから64KBの配布アーカイブを再生成し、隔離した `/tmp` へ展開。
+  `composer install --no-dev` で依存が `michelf/php-markdown` だけになることと、
+  table caption、行見出し、figure、figcaption内リンクの変換成功を確認した。
 - 確認結果: 回帰テスト、PSR-12、PHPCompatibility、PHPStan level 5、Composer
   strict validate、Composer audit、`git diff --check`はすべて正常。
 - 未完了: 利用者によるブラウザでの最終目視、v1.0.9タグ作成、push、Packagist
