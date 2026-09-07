@@ -82,3 +82,11 @@
   Packagistへの反映設定を確認する。
 - ヘッダー行の1列目と本文行の1列目を `scope="row"` にする表をサンプルへ追加。
   行見出しは色だけに依存せず、背景色と太い左罫線で判別できるCSSを適用した。
+- `league/commonmark` への段階的な移行方針を
+  `.codex/commonmark-migration-roadmap.md` に記録した。
+- `jidaikobo/php-markdown` のバージョン2として移行し、wrapperで主要APIと独自記法
+  の互換維持を目指す。HTMLの完全一致、Michelfの継承関係、Michelf由来のpublic
+  プロパティを直接操作する利用コードは互換性の対象外とする。
+- 未完了: 現行1.xの安定化、互換fixtureの整備、league/commonmark版の試作。
+- 次にやるとよいこと: caption内のインラインMarkdownを含むfigureの仕様と回帰
+  テストを整備する。
