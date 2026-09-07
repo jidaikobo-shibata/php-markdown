@@ -2,13 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
-## 2.0.0 - Unreleased
+## 2.0.0 - 2026-09-07
 
 ### Added
 
 - An immutable `MarkdownOptions` configuration object.
 - A per-instance `Jidaikobo\Markdown\MarkdownConverter` API.
 - AST nodes and renderers for table captions and figures.
+- Separate browser examples for the compatibility facade and version 2 API.
+- A version 2 upgrade guide and a frozen version 1.0.9 README archive.
 
 ### Changed
 

@@ -27,6 +27,20 @@ function assertNotContains(string $needle, string $haystack, string $message): v
     }
 }
 
+function renderExample(string $path): string
+{
+    ob_start();
+    include $path;
+    $output = ob_get_clean();
+
+    if ($output === false) {
+        fwrite(STDERR, "FAIL: Example output buffering failed.\n");
+        exit(1);
+    }
+
+    return $output;
+}
+
 MarkdownExtra::setTargetUrl('http://127.0.0.1:8000');
 MarkdownExtra::setReplacePath(__DIR__ . '/../examples');
 
@@ -211,5 +225,21 @@ if ($defaults->getBaseUrl() !== '' || $configured->getBaseUrl() !== 'https://exa
     fwrite(STDERR, "FAIL: MarkdownOptions must be immutable.\n");
     exit(1);
 }
+
+$_SERVER['SERVER_PORT'] = 8000;
+$compatibilityExample = renderExample(__DIR__ . '/../examples/index.php');
+$versionTwoExample = renderExample(__DIR__ . '/../examples/index-v2.php');
+assertContains(
+    'Jidaikobo MarkdownExtra 互換API表示確認',
+    $compatibilityExample,
+    'The compatibility API browser example should render.'
+);
+assertContains(
+    'Jidaikobo Markdown バージョン2新API表示確認',
+    $versionTwoExample,
+    'The version 2 API browser example should render.'
+);
+assertContains('<figure>', $compatibilityExample, 'The compatibility example should render custom syntax.');
+assertContains('<figure>', $versionTwoExample, 'The version 2 example should render custom syntax.');
 
 fwrite(STDOUT, "All regression checks passed.\n");

@@ -3,109 +3,132 @@
 # jidaikobo/php-markdown
 
 Accessible Markdown extensions built on
-[league/commonmark](https://commonmark.thephpleague.com/). The package adds
-table scopes and captions, figures, local file metadata, and root-relative URL
-completion.
+[League CommonMark](https://commonmark.thephpleague.com/).
 
-Version 2 uses League CommonMark internally. The package name and the primary
-`Jidaikobo\MarkdownExtra` API from version 1 remain available through a
-compatibility facade.
+Version 2 adds accessible table headers and captions, figures with structured
+captions, local file metadata, and root-relative URL completion. It uses a
+per-converter configuration API while retaining the primary version 1 API as
+a compatibility facade.
+
+> This document describes version 2, developed on the `main` branch.
+> See the [archived version 1 documentation](docs/README-v1.md) when maintaining
+> an existing version 1 installation.
 
 ## Installation
 
-Install via Composer:
+After version 2 is released, install it with Composer:
 
 ```bash
-composer require jidaikobo/php-markdown
+composer require jidaikobo/php-markdown:^2.0
 ```
 
-## Usage
+Existing applications which must remain on version 1 should use:
 
-New code should use an explicitly configured converter:
+```bash
+composer require jidaikobo/php-markdown:^1.0
+```
+
+See [UPGRADING.md](UPGRADING.md) before changing the major-version constraint.
+
+## Recommended version 2 API
+
+Create immutable options and pass them to a converter instance:
 
 ```php
-require 'vendor/autoload.php';
+<?php
+
+declare(strict_types=1);
 
 use Jidaikobo\Markdown\MarkdownConverter;
 use Jidaikobo\Markdown\MarkdownOptions;
 
+require __DIR__ . '/vendor/autoload.php';
+
 $options = MarkdownOptions::defaults()
     ->withBaseUrl('https://example.com')
-    ->withDocumentRoot('/var/www/public_html/example.com');
+    ->withDocumentRoot('/var/www/example.com/public');
 
 $converter = new MarkdownConverter($options);
 $html = $converter->convert($markdown);
 ```
 
-The version 1 facade remains supported for existing callers:
+`MarkdownOptions` is immutable: each `with...()` method returns a new options
+object. Converter instances therefore do not share configuration. This is
+particularly useful for tests, long-running PHP processes, and applications
+which render content for multiple sites.
+
+Both options are optional. Without a base URL, root-relative links are not
+completed. File metadata is added only when both a base URL and document root
+allow the URL to be resolved safely.
+
+## Version 1 compatibility API
+
+The main version 1 entry point remains available in version 2:
 
 ```php
-require 'vendor/autoload.php';
+<?php
 
 use Jidaikobo\MarkdownExtra;
 
-$table = "
-## heading
+require __DIR__ . '/vendor/autoload.php';
 
-| Header 1 | Header 2 |
-|----------|----------|
-| Row 1   :| Cell 1   |
-| Row 2   :| Cell 2   |
-|:capt.
+MarkdownExtra::setTargetUrl('https://example.com');
+MarkdownExtra::setReplacePath('/var/www/example.com/public');
 
-
-| scope row:| scope col |
-|-----------|-----------|
-| Row 1    :| Row2      |
-";
-
-$html = MarkdownExtra::defaultTransform($table);
-
-echo $html;
+$html = MarkdownExtra::defaultTransform($markdown);
 ```
 
-`new MarkdownExtra()->transform($markdown)` is also supported. Version 2 does
-not retain inheritance from `Michelf\MarkdownExtra`, Michelf's public parser
-properties, or byte-for-byte identical HTML output.
+The instance form also remains available:
 
-### Custom Enhancements
+```php
+$parser = new MarkdownExtra();
+$html = $parser->transform($markdown);
+```
 
-This library adds specific parsing behaviors:
+The compatibility facade and the recommended API use the same League
+CommonMark converter and Jidaikobo extension internally. New applications
+should prefer `MarkdownConverter`, because the static compatibility settings
+are shared process state.
 
-#### 1. Row Headers in Tables
+Compatibility has deliberate limits. Version 2 does not preserve:
 
-By adding a colon (:) at the end of a cell, you can mark it as a row header (`th`):
+- inheritance from `Michelf\MarkdownExtra`;
+- Michelf-specific public parser properties; or
+- byte-for-byte identical HTML, including whitespace and attribute order.
+
+The package instead preserves the documented custom syntax, destinations,
+document structure, and accessibility semantics. See the
+[migration guide](UPGRADING.md) for details.
+
+## Custom Markdown syntax
+
+### Column and row headers
+
+Normal table header cells receive `scope="col"`. Add a trailing colon to a
+cell to turn it into a row header with `scope="row"`:
 
 ```markdown
-| Name     | Age | City       |
-|----------|-----|------------|
-| Alice   :| 30  | New York   |
-| Bob     :| 25  | San Francisco |
+| Name: | Age | City          |
+|-------|-----|---------------|
+| Alice:| 30  | New York      |
+| Bob:  | 25  | San Francisco |
 ```
 
-You can change the scope of `th` to row by adding a colon (:) to the end of the header cell:
+The colon is a syntax marker and is not included in the rendered cell text.
+
+### Table captions and attributes
+
+A table row beginning with a colon becomes the table caption:
 
 ```markdown
-| Values  :| Age | City       |
-|----------|-----|------------|
-| Alice   :| 30  | New York   |
-| Bob     :| 25  | San Francisco |
+| Name  | Value |
+|-------|-------|
+| Alice | 10    |
+|: Results for the current period
 ```
 
-#### 2. Table Captions and Attributes
-
-If the last row of the table starts with a colon (:), it will be treated as a `caption`:
-
-```markdown
-| Name    | Age | City          |
-|---------|-----|---------------|
-| Alice   | 30  | New York      |
-| Bob     | 25  | San Francisco |
-|: This is a caption for the table.
-```
-
-Markdown Extra attributes immediately following a table are applied to the
-`table` element without preventing caption generation:
+League CommonMark attributes can follow the table without preventing caption
+generation:
 
 ```markdown
 | Name  | Value |
@@ -115,98 +138,117 @@ Markdown Extra attributes immediately following a table are applied to the
 {#results .summary}
 ```
 
-#### 3. Add file type and size to Link text
+This produces a `table` with the requested ID and class and a `caption` as its
+first child.
 
-When the link destination is a local file, the file type and file size are
-added to the link text. Configure the relationship between a public URL and
-its document root:
+### Figures and figure captions
 
-```php
-$options = MarkdownOptions::defaults()
-    ->withBaseUrl('https://example.com')
-    ->withDocumentRoot('/var/www/public_html/example.com');
-```
+An image on its own line followed immediately by an emphasized caption is
+converted into `figure` and `figcaption`:
 
 ```markdown
-[link text](https://example.com/files/example.zip)
+![Example](<files/example.svg?variant=(blue)> "Image description"){#example .image}
+*A caption with a [link](https://example.com/details), **strong text**, and `code`*
 ```
 
-```HTML
-<a href="https://example.com/files/example.zip">link text (zip, 1.2 MB)</a>
-```
+The caption is represented as AST children, so links, emphasis, strong text,
+and inline code remain structurally nested. Figure-like text inside fenced or
+indented code blocks is not converted.
 
-The resolved path must remain below the configured document root. Query
-strings and fragments are ignored when resolving the local file. Common image
-formats, including SVG, WebP, and AVIF, do not receive a size suffix.
+### File type and size
 
-#### 4. figcaption
-
-An image on its own line followed by an emphasized caption is converted into
-a figure. Inline Markdown inside the caption is supported.
+When a link resolves to a readable file below the configured document root,
+its extension and human-readable size are appended to the link text:
 
 ```markdown
-![Example](https://example.com/files/example.jpg "Image title"){.example-image}
-*A caption with a [link](https://example.com/details) and **strong text***
+[Download the report](/files/report.pdf)
 ```
 
-```HTML
-<figure>
-  <img src="https://example.com/files/example.jpg" alt="Example" title="Image title" class="example-image" />
-  <figcaption>A caption with a <a href="https://example.com/details">link</a> and <strong>strong text</strong></figcaption>
-</figure>
+```html
+<a href="https://example.com/files/report.pdf">Download the report (pdf, 1.2 MB)</a>
 ```
 
-Fenced and indented code blocks are protected and are not converted to
-figures.
+Query strings and fragments do not interfere with local file resolution.
+Common image types, including SVG, WebP, and AVIF, do not receive a metadata
+suffix. Markdown images are not processed as download links.
 
-#### 5. Root-relative URLs
+### Root-relative links
 
-When `withBaseUrl()` (or the compatibility `setTargetUrl()`) is configured,
-link URLs beginning with a single `/` are completed using that base URL.
-Protocol-relative URLs beginning with `//` are left unchanged.
+When a base URL is configured, link destinations beginning with one `/` are
+completed using that URL. Protocol-relative destinations beginning with `//`
+remain unchanged.
 
-## Browser Example
+## Security behavior
 
-The repository includes a self-contained browser example. After installing
-the Composer dependencies, start PHP's built-in web server from the project
+- Unsafe link schemes are rejected by League CommonMark.
+- Markdown attributes are limited to `id`, `class`, `lang`, `title`, and `rel`.
+- Markdown nesting and delimiter counts have explicit limits.
+- Local files are resolved with canonical paths and must remain below the
+  configured document root.
+- URL scheme, host, and port must match the configured base URL before local
+  file metadata is read.
+
+Raw HTML remains enabled for compatibility. Applications rendering untrusted
+Markdown should apply an HTML sanitization policy appropriate to their output
+context.
+
+## Browser examples
+
+Install dependencies and start PHP's built-in web server from the repository
 root:
 
 ```bash
 php -S 127.0.0.1:8000 -t examples
 ```
 
-Open <http://127.0.0.1:8000/> in a browser.
+Then compare the two entry points:
+
+- <http://127.0.0.1:8000/> uses the version 1 compatibility facade.
+- <http://127.0.0.1:8000/index-v2.php> uses the recommended version 2 API.
+
+Both pages render the same `examples/sample.md`.
 
 ## Development
 
-Run the regression checks with:
+Run regression checks:
 
 ```bash
 composer test
 ```
 
-Run static analysis with:
+Run static analysis and coding-standard checks:
 
 ```bash
 composer phpstan
+composer codestyle
+composer compatibility
 ```
 
 ## Requirements
 
-- PHP 7.4 or higher
+- PHP 7.4 or later
+- `ext-mbstring`
+- `league/commonmark` 2.10 or later within the supported 2.x series
+
+## Version support
+
+- Version 2 is developed on `main`.
+- Version 1 maintenance is isolated on the `1.x` branch.
+- Applications using `^1.0` do not update automatically to version 2.
+
+The [version 1 README snapshot](docs/README-v1.md) is retained for reference
+and is not maintained alongside version 2 documentation. The immutable
+[`v1.0.9` tag](https://github.com/jidaikobo-shibata/php-markdown/tree/v1.0.9)
+contains the complete released version 1 source and documentation.
 
 ## License
 
-This project is licensed under the [MIT License](https://opensource.org/licenses/MIT), see the [LICENSE file](https://github.com/jidaikobo-shibata/php-markdown?tab=MIT-1-ov-file) for details
+This project is licensed under the [MIT License](LICENSE).
 
-## Author
+## Links
 
-- [jidaikobo-shibata](https://github.com/jidaikobo-shibata/)
-
-## Link
-
-- [jidaikobo/php-markdown - Packagist](https://packagist.org/packages/jidaikobo/php-markdown)
-- [jidaikobo-shibata/php-markdown - GitHub](https://github.com/jidaikobo-shibata/php-markdown)
+- [jidaikobo/php-markdown on Packagist](https://packagist.org/packages/jidaikobo/php-markdown)
+- [jidaikobo-shibata/php-markdown on GitHub](https://github.com/jidaikobo-shibata/php-markdown)
 
 ## Acknowledgements
 

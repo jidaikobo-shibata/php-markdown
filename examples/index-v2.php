@@ -2,7 +2,8 @@
 
 declare(strict_types=1);
 
-use Jidaikobo\MarkdownExtra;
+use Jidaikobo\Markdown\MarkdownConverter;
+use Jidaikobo\Markdown\MarkdownOptions;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -23,9 +24,12 @@ if ($markdown === false) {
         $serverPort = 8000;
     }
 
-    MarkdownExtra::setTargetUrl('http://127.0.0.1:' . $serverPort);
-    MarkdownExtra::setReplacePath(__DIR__);
-    $renderedHtml = MarkdownExtra::defaultTransform($markdown);
+    $options = MarkdownOptions::defaults()
+        ->withBaseUrl('http://127.0.0.1:' . $serverPort)
+        ->withDocumentRoot(__DIR__);
+
+    $converter = new MarkdownConverter($options);
+    $renderedHtml = $converter->convert($markdown);
 }
 ?>
 <!DOCTYPE html>
@@ -33,7 +37,7 @@ if ($markdown === false) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>互換API - Jidaikobo MarkdownExtra 表示確認</title>
+    <title>バージョン2新API - Jidaikobo Markdown 表示確認</title>
     <style>
         :root {
             color-scheme: light dark;
@@ -105,15 +109,15 @@ if ($markdown === false) {
 </head>
 <body>
     <header>
-        <h1>Jidaikobo MarkdownExtra 互換API表示確認</h1>
+        <h1>Jidaikobo Markdown バージョン2新API表示確認</h1>
         <nav aria-label="サンプルAPIの切り替え">
-            <strong aria-current="page">互換API</strong>
+            <a href="index.php">互換API</a>
             <span aria-hidden="true"> / </span>
-            <a href="index-v2.php">バージョン2新API</a>
+            <strong aria-current="page">バージョン2新API</strong>
         </nav>
         <p>
-            このページは <code>Jidaikobo\MarkdownExtra</code> と
-            static setterを使う、バージョン1からの互換APIを確認します。
+            このページは <code>MarkdownOptions</code> と
+            <code>MarkdownConverter</code> を使う、バージョン2の推奨APIを確認します。
         </p>
         <p>以下は <code>examples/sample.md</code> の現在の変換結果です。</p>
     </header>
