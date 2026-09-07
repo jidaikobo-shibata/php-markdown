@@ -2,7 +2,14 @@
 
 # jidaikobo/php-markdown
 
-A few additions to the popular [michelf/php-markdown](https://github.com/michelf/php-markdown). This library provides custom enhancements and overrides to the original Markdown parser, tailored for specific needs.
+Accessible Markdown extensions built on
+[league/commonmark](https://commonmark.thephpleague.com/). The package adds
+table scopes and captions, figures, local file metadata, and root-relative URL
+completion.
+
+Version 2 uses League CommonMark internally. The package name and the primary
+`Jidaikobo\MarkdownExtra` API from version 1 remain available through a
+compatibility facade.
 
 ## Installation
 
@@ -14,7 +21,23 @@ composer require jidaikobo/php-markdown
 
 ## Usage
 
-Here's how you can use the library in your project:
+New code should use an explicitly configured converter:
+
+```php
+require 'vendor/autoload.php';
+
+use Jidaikobo\Markdown\MarkdownConverter;
+use Jidaikobo\Markdown\MarkdownOptions;
+
+$options = MarkdownOptions::defaults()
+    ->withBaseUrl('https://example.com')
+    ->withDocumentRoot('/var/www/public_html/example.com');
+
+$converter = new MarkdownConverter($options);
+$html = $converter->convert($markdown);
+```
+
+The version 1 facade remains supported for existing callers:
 
 ```php
 require 'vendor/autoload.php';
@@ -40,6 +63,10 @@ $html = MarkdownExtra::defaultTransform($table);
 
 echo $html;
 ```
+
+`new MarkdownExtra()->transform($markdown)` is also supported. Version 2 does
+not retain inheritance from `Michelf\MarkdownExtra`, Michelf's public parser
+properties, or byte-for-byte identical HTML output.
 
 ### Custom Enhancements
 
@@ -95,8 +122,9 @@ added to the link text. Configure the relationship between a public URL and
 its document root:
 
 ```php
-MarkdownExtra::setTargetUrl('https://example.com');
-MarkdownExtra::setReplacePath('/var/www/public_html/example.com');
+$options = MarkdownOptions::defaults()
+    ->withBaseUrl('https://example.com')
+    ->withDocumentRoot('/var/www/public_html/example.com');
 ```
 
 ```markdown
@@ -133,9 +161,9 @@ figures.
 
 #### 5. Root-relative URLs
 
-When `setTargetUrl()` is configured, link URLs beginning with a single `/`
-are completed using that base URL. Protocol-relative URLs beginning with `//`
-are left unchanged.
+When `withBaseUrl()` (or the compatibility `setTargetUrl()`) is configured,
+link URLs beginning with a single `/` are completed using that base URL.
+Protocol-relative URLs beginning with `//` are left unchanged.
 
 ## Browser Example
 
@@ -182,4 +210,6 @@ This project is licensed under the [MIT License](https://opensource.org/licenses
 
 ## Acknowledgements
 
-This library builds upon the work of Michel Fortin and his excellent `michelf/php-markdown`. Learn more at the [official repository](https://github.com/michelf/php-markdown).
+Version 2 is built on [League CommonMark](https://commonmark.thephpleague.com/).
+Versions 1.x were built on Michel Fortin's
+[`michelf/php-markdown`](https://github.com/michelf/php-markdown).

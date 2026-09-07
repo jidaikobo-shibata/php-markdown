@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.0.0 - Unreleased
+
+### Added
+
+- An immutable `MarkdownOptions` configuration object.
+- A per-instance `Jidaikobo\Markdown\MarkdownConverter` API.
+- AST nodes and renderers for table captions and figures.
+
+### Changed
+
+- The Markdown engine is now `league/commonmark` 2.x.
+- Custom table, figure, URL, and file metadata behavior is applied to the
+  parsed syntax tree instead of by regular-expression HTML rewriting.
+- `Jidaikobo\MarkdownExtra` is now a compatibility facade over the new
+  converter.
+
+### Removed
+
+- Inheritance from `Michelf\MarkdownExtra`.
+- Compatibility with Michelf-specific public parser properties.
+- The guarantee of byte-for-byte identical HTML output to version 1.
+
 ## 1.0.9 - 2026-09-07
 
 ### Added

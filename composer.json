@@ -1,6 +1,6 @@
 {
     "name": "jidaikobo/php-markdown",
-    "description": "A few additions to michelf/php-markdown",
+    "description": "Accessible Markdown extensions built on league/commonmark",
     "type": "library",
     "license": "MIT",
     "keywords": ["markdown"],
@@ -17,9 +17,11 @@
     ],
     "require": {
         "php": ">=7.4",
-        "michelf/php-markdown": "^2.0"
+        "ext-mbstring": "*",
+        "league/commonmark": "^2.10"
     },
     "require-dev": {
+        "michelf/php-markdown": "^2.0",
         "phpstan/phpstan": "^2.0",
         "squizlabs/php_codesniffer": "^3.13.6",
         "phpcompatibility/php-compatibility": "^9.3"

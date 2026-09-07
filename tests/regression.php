@@ -6,6 +6,8 @@
 declare(strict_types=1);
 
 use Jidaikobo\MarkdownExtra;
+use Jidaikobo\Markdown\MarkdownConverter;
+use Jidaikobo\Markdown\MarkdownOptions;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -65,12 +67,8 @@ MARKDOWN;
 
 $html = MarkdownExtra::defaultTransform($markdown);
 
-assertContains(
-    '<table id="result-table" class="results">' . "\n" .
-    '<caption>Accessible table</caption>',
-    $html,
-    'Table attributes and caption should be preserved.'
-);
+assertContains('<table class="results" id="result-table">', $html, 'Table attributes should be preserved.');
+assertContains('<caption>Accessible table</caption>', $html, 'Table captions should be preserved.');
 assertContains('<th scope="col">Column</th>', $html, 'Column headers need scope="col".');
 assertContains('<th scope="row">Row</th>', $html, 'Row headers need scope="row".');
 assertContains('<figure>', $html, 'An image followed by emphasis should become a figure.');
@@ -81,13 +79,13 @@ assertContains(
     'Figure captions should support inline Markdown.'
 );
 assertContains(
-    '<img src="files/sample_(image).svg?first=1&amp;second=2" alt="Complex image" ' .
-    'title="Image title" id="sample-image" class="image" />',
+    '<img class="image" id="sample-image" src="files/sample_(image).svg?first=1&amp;second=2" ' .
+    'alt="Complex image" title="Image title" />',
     $html,
     'Figures should delegate image URLs, titles, and attributes to the base parser.'
 );
 assertContains(
-    "<pre><code class=\"markdown\">![Code sample](files/sample-image.svg)\n" .
+    "<pre><code class=\"language-markdown\">![Code sample](files/sample-image.svg)\n" .
     "*Code caption*\n</code></pre>",
     $html,
     'Figure syntax in a fenced code block must remain unchanged.'
@@ -105,7 +103,7 @@ assertContains(
 );
 assertNotContains('SVG file (svg,', $html, 'SVG links must be treated as image links.');
 assertContains(
-    '<a href="https://example.com/" class="external" lang="ja">Attributed link</a>',
+    '<a class="external" lang="ja" href="https://example.com/">Attributed link</a>',
     $html,
     'Inline link attributes should be preserved.'
 );
@@ -174,5 +172,44 @@ assertNotContains(
     $basePathHtml,
     'Same-origin URLs outside the configured base path must not expose metadata.'
 );
+
+$newOptions = MarkdownOptions::defaults()
+    ->withBaseUrl('http://127.0.0.1:8000')
+    ->withDocumentRoot(__DIR__ . '/../examples');
+$newConverter = new MarkdownConverter($newOptions);
+$newApiHtml = $newConverter->convert("[New API file](/files/download.txt)\n");
+assertContains(
+    '<a href="http://127.0.0.1:8000/files/download.txt">New API file (txt, 100 B)</a>',
+    $newApiHtml,
+    'The new instance API should apply its own URL and document-root options.'
+);
+
+$isolatedConverter = new MarkdownConverter();
+$isolatedHtml = $isolatedConverter->convert("[Isolated](/files/download.txt)\n");
+assertContains(
+    '<a href="/files/download.txt">Isolated</a>',
+    $isolatedHtml,
+    'A new API instance must not inherit the compatibility facade static state.'
+);
+assertNotContains(
+    'Isolated (txt,',
+    $isolatedHtml,
+    'File metadata must not leak between converter instances.'
+);
+
+$instanceFacade = new MarkdownExtra();
+$instanceHtml = $instanceFacade->transform("**Instance facade**\n");
+assertContains(
+    '<strong>Instance facade</strong>',
+    $instanceHtml,
+    'The version 1 instance transform API should remain available.'
+);
+
+$defaults = MarkdownOptions::defaults();
+$configured = $defaults->withBaseUrl('https://example.com');
+if ($defaults->getBaseUrl() !== '' || $configured->getBaseUrl() !== 'https://example.com') {
+    fwrite(STDERR, "FAIL: MarkdownOptions must be immutable.\n");
+    exit(1);
+}
 
 fwrite(STDOUT, "All regression checks passed.\n");

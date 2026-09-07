@@ -143,3 +143,34 @@
 - 未完了: 実クラスの作成、v1互換fixture、API名とv2最低PHPバージョンの確定。
 - 次にやるとよいこと: v1.0.9の公開APIと代表的な変換結果をfixtureとして固定し、
   `MarkdownOptions` と `MarkdownConverter` の最小インターフェースを試作する。
+
+### v1保守ブランチとv2開発ブランチ
+
+- `v1.0.9` (`27b93ac`) を起点に保守用の `1.x` ブランチを作成した。
+- v2開発は既定の `main` で継続することとし、一時的な `2.x` ブランチは
+  `main` と同じコミットであることを確認してローカルから削除した。
+- `composer.json` のv2向け依存変更は、未コミットのまま `main` に引き継いでいる。
+- 理由: `^1.0` 利用者向けの保守系列と、次期メジャー版の開発先を明確に
+  分けつつ、将来の標準ブランチを `main` にするため。
+- 未完了: `1.x` と `main` のリモート反映、v2実装と検証。
+- 次にやるとよいこと: `main` で互換fixture、新API、互換wrapperを実装し、
+  v2の完成確認後に必要なブランチをpushする。
+
+### v2.0.0 League CommonMark版の初期実装
+
+- 本番依存を `league/commonmark:^2.10` へ切り替え、Michelfは移行比較用の
+  開発依存に移した。
+- immutableな `MarkdownOptions` と、設定がインスタンス間で混ざらない
+  `MarkdownConverter` を実装した。
+- `Jidaikobo\MarkdownExtra` は旧static setter、`defaultTransform()`、インスタンスの
+  `transform()` を保つ互換facadeに置き換えた。
+- 表の `scope`、caption、figure/figcaption、URL補完、安全なローカルファイル
+  容量表示を、League CommonMarkのASTノード操作と独自rendererで実装した。
+- 旧正規表現実装のtraitを削除し、READMEとCHANGELOGをv2開発状況に合わせた。
+- 確認結果: 回帰テスト、Composer strict validate、PSR-12、PHP 7.4互換検査、
+  PHPStan level 5が成功。サンプルはPHP組み込みWebサーバーでHTTP 200と主要な
+  caption、scope、figure、容量表示を確認した。
+- 未完了: v1とv2の差分分類、専用移行ガイド、追加境界テスト、開発依存の
+  Michelf削除判断、リモートブランチ反映。
+- 次にやるとよいこと: v1.0.9の出力と比較し、差分を互換性方針に照らして
+  回帰テストまたは移行ガイドに固定する。

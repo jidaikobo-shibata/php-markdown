@@ -1,27 +1,64 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Jidaikobo;
 
-use Michelf\MarkdownExtra as BaseMarkdownExtra;
+use Jidaikobo\Markdown\MarkdownConverter;
+use Jidaikobo\Markdown\MarkdownOptions;
 
 /**
- * A custom MarkdownExtra class with additional table processing features.
+ * Backward-compatible facade for the version 1 public API.
  *
- * This class extends the Michelf\MarkdownExtra to add support for:
- * - additional table support
- * - additional figcaption support
+ * Version 2 no longer extends Michelf\MarkdownExtra. New code should create a
+ * MarkdownConverter with explicit MarkdownOptions instead.
  */
-class MarkdownExtra extends BaseMarkdownExtra
+class MarkdownExtra
 {
-    use Traits\TableTrait;
-    use Traits\FigcaptionTrait;
-    use Traits\SetfilesizeTrait;
+    /** @var string */
+    protected static $targetUrl = '';
 
-    public function __construct()
+    /** @var string */
+    protected static $replacePath = '';
+
+    /**
+     * @param string $url Base URL used to complete root-relative links.
+     */
+    public static function setTargetUrl($url): void
     {
-        // Run after fenced and indented code blocks have been protected.
-        $this->block_gamut['processFigures'] = 55;
+        self::$targetUrl = rtrim($url, '/');
+    }
 
-        parent::__construct();
+    /**
+     * @param string $path Document root used to resolve downloadable files.
+     */
+    public static function setReplacePath($path): void
+    {
+        self::$replacePath = rtrim($path, '/');
+    }
+
+    /**
+     * @param string $markdown Markdown source.
+     */
+    public static function defaultTransform($markdown): string
+    {
+        return self::createConverter()->convert($markdown);
+    }
+
+    /**
+     * @param string $markdown Markdown source.
+     */
+    public function transform($markdown): string
+    {
+        return self::defaultTransform($markdown);
+    }
+
+    private static function createConverter(): MarkdownConverter
+    {
+        $options = MarkdownOptions::defaults()
+            ->withBaseUrl(self::$targetUrl)
+            ->withDocumentRoot(self::$replacePath);
+
+        return new MarkdownConverter($options);
     }
 }
