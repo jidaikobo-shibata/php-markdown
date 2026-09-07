@@ -25,11 +25,14 @@
         "phpcompatibility/php-compatibility": "^9.3"
     },
     "scripts": {
-      "test": "php tests/regression.php",
-      "phpstan": [
-        "vendor/bin/phpstan analyse src/ --level=5"
-      ],
-      "codestyle": "vendor/bin/php-cs-fixer fix src --dry-run --verbose --show-progress=none",
-      "codestyle-fix": "vendor/bin/php-cs-fixer fix src"
+        "test": "php tests/regression.php",
+        "phpstan": [
+            "vendor/bin/phpstan analyse src/ --level=5"
+        ],
+        "compatibility": [
+            "vendor/bin/phpcs --standard=vendor/phpcompatibility/php-compatibility/PHPCompatibility --runtime-set testVersion 7.4- src tests examples/index.php"
+        ],
+        "codestyle": "vendor/bin/phpcs",
+        "codestyle-fix": "vendor/bin/phpcbf"
     }
 }

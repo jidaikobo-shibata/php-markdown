@@ -5,7 +5,7 @@ namespace Jidaikobo\Traits;
 /**
  * additional figcaption processing features.
  */
-Trait FigcaptionTrait
+trait FigcaptionTrait
 {
     /**
      * Detects images with captions and transforms them into figure elements.
@@ -15,17 +15,30 @@ Trait FigcaptionTrait
      */
     protected function processFigures($text)
     {
-        // Regex pattern to match images followed by captions
-        $pattern = '/!\[([^\]]*)\]\(([^)]+)\)\s*\r?\n\s*\*([^\*]+)\*/m';
+        // Find two-line figure candidates. Image parsing itself is delegated
+        // to Michelf's span gamut so titles, attributes, references, and
+        // nested URL parentheses follow the base parser's rules.
+        $pattern = '{
+            ^[ ]{0,3}(!\[[^\n]*\][^\n]*)[ ]*\n
+            [ ]{0,3}\*(.+)\*[ ]*$
+        }mx';
 
         // Callback to replace matches with a protected figure block.
         return preg_replace_callback($pattern, function ($matches) {
-            $alt = htmlspecialchars($matches[1], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-            $url = htmlspecialchars($matches[2], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-            $caption = htmlspecialchars($matches[3], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $image = $this->runSpanGamut(trim($matches[1]));
+            $imageHtml = trim($this->unhash($image));
+
+            // A line beginning with image-like text is not necessarily a
+            // valid standalone image. Leave it untouched unless the base
+            // parser produced exactly one img element.
+            if (!preg_match('/\A<img\b[^>]*\/?>(?:\s*)\z/s', $imageHtml)) {
+                return $matches[0];
+            }
+
+            $caption = $this->runSpanGamut(trim($matches[2]));
 
             $figure = "<figure>\n" .
-                      "  <img src=\"$url\" alt=\"$alt\" />\n" .
+                      "  $image\n" .
                       "  <figcaption>$caption</figcaption>\n" .
                       "</figure>";
 

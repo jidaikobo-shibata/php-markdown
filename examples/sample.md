@@ -53,8 +53,11 @@ Markdown Extra形式のブロック属性を表の直後に置いた境界例で
 
 ## figureとfigcaption
 
-![青い四角のサンプル画像](files/sample-image.svg)
-*青い四角を示すキャプション*
+![青い四角のサンプル画像](<files/sample-image.svg?variant=(blue)> "画像の説明"){#figure-sample .sample-image}
+*青い四角を示す[詳しい説明](https://example.com/figure)と **強調** と `コード`*
+
+画像側のtitle・属性・括弧を含むURLと、figcaption内のリンク・強調・コードが
+それぞれ変換されることを確認します。
 
 ## リンクとファイル容量
 

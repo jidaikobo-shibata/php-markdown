@@ -90,3 +90,24 @@
 - 未完了: 現行1.xの安定化、互換fixtureの整備、league/commonmark版の試作。
 - 次にやるとよいこと: caption内のインラインMarkdownを含むfigureの仕様と回帰
   テストを整備する。
+
+### v1.0.9リリース準備
+
+- figureの画像部分をMichelf本体のspan処理へ委譲し、画像のtitle、属性、括弧を
+  含むURLに対応した。
+- figcaptionの内容もspan処理へ通し、リンク、強調、インラインコードを入れ子に
+  できるようにした。フェンス・インデントコードと、画像以外の文字を伴う行は
+  figureへ変換しない回帰テストを追加した。
+- ファイル容量取得時のURL判定をscheme・host・port・基底パスの比較へ変更し、
+  `realpath`で公開ディレクトリ配下の通常ファイルだけを許可した。平文・URL
+  エンコードされたtraversal、別host、protocol-relative URLのテストを追加した。
+- READMEを現在の表、figure、リンク、サンプル、テスト手順に合わせて更新し、
+  `CHANGELOG.md` にv1.0.9の変更内容を記録した。
+- Composerのコードスタイルスクリプトを実在するPHPCSへ修正し、PSR-12設定と
+  PHP 7.4以降のPHPCompatibility検査を整備した。
+- 確認結果: 回帰テスト、PSR-12、PHPCompatibility、PHPStan level 5、Composer
+  strict validate、Composer audit、`git diff --check`はすべて正常。
+- 未完了: 利用者によるブラウザでの最終目視、v1.0.9タグ作成、push、Packagist
+  への反映確認。
+- 次にやるとよいこと: 起動中のサンプルでfigureとリンク表示を目視し、問題が
+  なければコミット後にv1.0.9タグを作成する。

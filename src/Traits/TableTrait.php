@@ -9,7 +9,7 @@ namespace Jidaikobo\Traits;
  * - Row headers (indicated by a trailing colon `:` in table cells).
  * - Table captions (indicated by a leading colon `:` in rows).
  */
-Trait TableTrait
+trait TableTrait
 {
     /**
      * Finds tables, including an optional Markdown Extra attribute line.
@@ -54,6 +54,8 @@ Trait TableTrait
      *
      * @return string The processed table HTML.
      */
+    // The method name is defined by the parent parser's callback API.
+    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps,PSR2.Methods.MethodDeclaration.Underscore
     protected function _doTable_leadingPipe_callback($matches)
     {
         $content = preg_replace('/^ *[|]/m', '', $matches[3]);
@@ -74,6 +76,8 @@ Trait TableTrait
      *
      * @return string The processed table HTML, hashed for further Markdown processing.
      */
+    // The method name is defined by the parent parser's callback API.
+    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps,PSR2.Methods.MethodDeclaration.Underscore
     protected function _doTable_callback($matches)
     {
         $head       = $matches[1];
@@ -132,8 +136,8 @@ Trait TableTrait
             $row = $this->parseSpan($row);
 
             if (strpos(trim($row), ':') === 0) {
-              $caption = "<caption>" . $this->runSpanGamut(trim(ltrim($row, ':'))) . "</caption>";
-              continue;
+                $caption = "<caption>" . $this->runSpanGamut(trim(ltrim($row, ':'))) . "</caption>";
+                continue;
             }
 
             // Check if the first cell is marked as a row header.

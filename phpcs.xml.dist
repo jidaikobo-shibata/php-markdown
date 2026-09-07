@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<ruleset name="Jidaikobo PHP Markdown">
+    <description>Code style rules for the package.</description>
+
+    <arg name="colors"/>
+    <arg value="ps"/>
+
+    <file>src</file>
+    <file>tests</file>
+    <file>examples/index.php</file>
+
+    <rule ref="PSR12"/>
+</ruleset>

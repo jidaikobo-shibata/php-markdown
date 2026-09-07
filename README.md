@@ -65,7 +65,7 @@ You can change the scope of `th` to row by adding a colon (:) to the end of the 
 | Bob     :| 25  | San Francisco |
 ```
 
-#### 2. Table Captions
+#### 2. Table Captions and Attributes
 
 If the last row of the table starts with a colon (:), it will be treated as a `caption`:
 
@@ -77,10 +77,22 @@ If the last row of the table starts with a colon (:), it will be treated as a `c
 |: This is a caption for the table.
 ```
 
+Markdown Extra attributes immediately following a table are applied to the
+`table` element without preventing caption generation:
+
+```markdown
+| Name  | Value |
+|-------|-------|
+| Alice | 10    |
+|: Results
+{#results .summary}
+```
+
 #### 3. Add file type and size to Link text
 
-When the link destination is a file, the file type and file size are added to the link string.
-Sets the relationship between a URL and a path on the server.
+When the link destination is a local file, the file type and file size are
+added to the link text. Configure the relationship between a public URL and
+its document root:
 
 ```php
 MarkdownExtra::setTargetUrl('https://example.com');
@@ -92,23 +104,63 @@ MarkdownExtra::setReplacePath('/var/www/public_html/example.com');
 ```
 
 ```HTML
-<a href="https://example.com/files/example.zip">link text (zip, 1.2MB)</a>
+<a href="https://example.com/files/example.zip">link text (zip, 1.2 MB)</a>
 ```
+
+The resolved path must remain below the configured document root. Query
+strings and fragments are ignored when resolving the local file. Common image
+formats, including SVG, WebP, and AVIF, do not receive a size suffix.
 
 #### 4. figcaption
 
-The image and em notation are arranged side by side without line breaks.
+An image on its own line followed by an emphasized caption is converted into
+a figure. Inline Markdown inside the caption is supported.
 
 ```markdown
-![](https://example.com/files/example.jpg)
-*caption*
+![Example](https://example.com/files/example.jpg "Image title"){.example-image}
+*A caption with a [link](https://example.com/details) and **strong text***
 ```
 
 ```HTML
 <figure>
-![](https://example.com/files/example.jpg)
-<figcaption>caption</figcaption>
+  <img src="https://example.com/files/example.jpg" alt="Example" title="Image title" class="example-image" />
+  <figcaption>A caption with a <a href="https://example.com/details">link</a> and <strong>strong text</strong></figcaption>
 </figure>
+```
+
+Fenced and indented code blocks are protected and are not converted to
+figures.
+
+#### 5. Root-relative URLs
+
+When `setTargetUrl()` is configured, link URLs beginning with a single `/`
+are completed using that base URL. Protocol-relative URLs beginning with `//`
+are left unchanged.
+
+## Browser Example
+
+The repository includes a self-contained browser example. After installing
+the Composer dependencies, start PHP's built-in web server from the project
+root:
+
+```bash
+php -S 127.0.0.1:8000 -t examples
+```
+
+Open <http://127.0.0.1:8000/> in a browser.
+
+## Development
+
+Run the regression checks with:
+
+```bash
+composer test
+```
+
+Run static analysis with:
+
+```bash
+composer phpstan
 ```
 
 ## Requirements
