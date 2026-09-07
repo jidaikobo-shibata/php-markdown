@@ -214,3 +214,18 @@
 - 未完了: 最終検証、コミット、`v2.0.0` タグ作成、`1.x`・`main`・タグのpush。
 - 次にやるとよいこと: テストと配布アーカイブを検証し、成功時のみタグとpushを
   実行する。
+
+### v2.0.0最終検証
+
+- PHP構文、回帰テスト、Composer strict validate、PSR-12、PHPCompatibility 7.4以降、
+  PHPStan level 5、Composer audit、`git diff --check` がすべて成功した。
+- 互換APIとv2新APIの両exampleがHTTP 200となり、両者の `<main>` 出力の
+  SHA-256が一致することを確認した。
+- コミット `152a570` から37KBのzipを作成し、空の旧ディレクトリを除いた
+  28エントリの配布内容を確認した。
+- 配布zipを `/tmp` に隔離展開し、`composer install --no-dev` 後の直接本番依存が
+  `league/commonmark 2.10.0` だけであること、Michelfがインストールされないこと、
+  同梱回帰テストの成功を確認した。
+- 未完了: `v2.0.0` タグ作成と、`1.x`・`main`・タグのpush。
+- 次にやるとよいこと: この検証記録をコミットし、そのコミットへannotated tagを
+  作成してリモート反映を確認する。
