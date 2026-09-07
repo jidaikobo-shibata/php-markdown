@@ -10,17 +10,22 @@ captions, local file metadata, and root-relative URL completion. It uses a
 per-converter configuration API while retaining the primary version 1 API as
 a compatibility facade.
 
-> This document describes version 2, developed on the `main` branch.
+> Version 2 is currently available as the `2.0.0-beta.1` prerelease and is
+> developed on the `main` branch. Test it before using it in production.
 > See the [archived version 1 documentation](docs/README-v1.md) when maintaining
 > an existing version 1 installation.
 
 ## Installation
 
-After version 2 is released, install it with Composer:
+Install the version 2 beta explicitly with Composer:
 
 ```bash
-composer require jidaikobo/php-markdown:^2.0
+composer require jidaikobo/php-markdown:2.0.0-beta.1
 ```
+
+A stable version 2 release is not available yet. Composer does not select this
+beta for applications constrained to stable releases unless it is requested
+explicitly.
 
 Existing applications which must remain on version 1 should use:
 
@@ -233,6 +238,7 @@ composer compatibility
 ## Version support
 
 - Version 2 is developed on `main`.
+- The current version 2 release is `2.0.0-beta.1`, not a stable release.
 - Version 1 maintenance is isolated on the `1.x` branch.
 - Applications using `^1.0` do not update automatically to version 2.
 

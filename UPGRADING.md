@@ -18,11 +18,14 @@ Version 1 constraints do not install version 2 automatically:
 }
 ```
 
-After reviewing this guide, opt in to version 2 explicitly:
+After reviewing this guide, opt in to the current version 2 beta explicitly:
 
 ```bash
-composer require jidaikobo/php-markdown:^2.0
+composer require jidaikobo/php-markdown:2.0.0-beta.1
 ```
+
+Do not change a production constraint to `^2.0` until a stable version 2 has
+been released and tested for that application.
 
 ## What remains compatible
 
@@ -136,7 +139,8 @@ attributes rather than serialization details.
 
 ## Markdown and HTML review checklist
 
-Before deploying version 2, verify representative documents containing:
+Before testing or deploying the version 2 beta, verify representative
+documents containing:
 
 - ordinary headings, paragraphs, lists, links, and code blocks;
 - tables with column and row headers;
