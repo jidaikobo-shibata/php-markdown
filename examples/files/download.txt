@@ -1,0 +1,1 @@
+Jidaikobo MarkdownExtra のファイル形式・容量表示を確認するための文書です。

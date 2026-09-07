@@ -12,6 +12,62 @@ namespace Jidaikobo\Traits;
 Trait TableTrait
 {
     /**
+     * Finds tables, including an optional Markdown Extra attribute line.
+     *
+     * @param string $text The Markdown text.
+     *
+     * @return string The text with tables converted to protected HTML blocks.
+     */
+    protected function doTables($text)
+    {
+        $lessThanTab = $this->tab_width - 1;
+
+        $text = preg_replace_callback('
+            {
+                ^[ ]{0,' . $lessThanTab . '}[|](.+) \n
+                [ ]{0,' . $lessThanTab . '}[|]([ ]*[-:]+[-| :]*) \n
+                (
+                    (?>[ ]*[|].* \n)*
+                )
+                [ ]*(?:' . $this->id_class_attr_catch_re . ')[ ]* \n
+                (?=\n|\Z)
+            }xm', [$this, '_doTable_leadingPipe_callback'], $text);
+
+        $text = preg_replace_callback('
+            {
+                ^[ ]{0,' . $lessThanTab . '}(\S.*[|].*) \n
+                [ ]{0,' . $lessThanTab . '}([-:]+[ ]*[|][-| :]*) \n
+                (
+                    (?>.*[|].* \n)*
+                )
+                [ ]*(?:' . $this->id_class_attr_catch_re . ')[ ]* \n
+                (?=\n|\Z)
+            }xm', [$this, '_doTable_callback'], $text);
+
+        return parent::doTables($text);
+    }
+
+    /**
+     * Removes leading pipes and forwards optional table attributes.
+     *
+     * @param array $matches The regex matches for the table syntax.
+     *
+     * @return string The processed table HTML.
+     */
+    protected function _doTable_leadingPipe_callback($matches)
+    {
+        $content = preg_replace('/^ *[|]/m', '', $matches[3]);
+
+        return $this->_doTable_callback([
+            $matches[0],
+            $matches[1],
+            $matches[2],
+            $content,
+            $matches[4] ?? null,
+        ]);
+    }
+
+    /**
      * Processes Markdown tables with custom features like row headers and captions.
      *
      * @param array $matches The regex matches for the table syntax.
@@ -98,7 +154,12 @@ Trait TableTrait
         $text .= "</table>";
 
         if (!empty($caption)) {
-            $text = str_replace('<table>', "<table>\n" . $caption, $text);
+            $text = preg_replace(
+                '/\A(<table\b[^>]*>)/',
+                '$1' . "\n" . $caption,
+                $text,
+                1
+            );
         }
 
         return $this->hashBlock($text) . "\n";

@@ -24,7 +24,9 @@ Trait SetfilesizeTrait
     {
         $link_text = $this->runSpanGamut($matches[2]);
         $url = $matches[3] === '' ? $matches[4] : $matches[3];
+        $title_quote =& $matches[6];
         $title =& $matches[7];
+        $attr = $this->doExtraAttributes('a', $matches[8] ?? '');
 
         // 元のURLを復元
         $unhashed = $this->unhash($url);
@@ -48,10 +50,14 @@ Trait SetfilesizeTrait
                 $sizeText = $this->formatFileSize($size);
 
                 // 拡張子を取得
-                $extension = pathinfo($localPath, PATHINFO_EXTENSION);
+                $extension = strtolower(pathinfo($localPath, PATHINFO_EXTENSION));
 
                 // 画像は除外する
-                if (!in_array($extension, ['png', 'jpg', 'jpeg', 'jpe', 'gif', 'bmp', 'tif', 'tiff', 'ico'])) {
+                $imageExtensions = [
+                    'png', 'apng', 'jpg', 'jpeg', 'jpe', 'jfif', 'pjpeg', 'pjp',
+                    'gif', 'bmp', 'tif', 'tiff', 'ico', 'svg', 'svgz', 'webp', 'avif',
+                ];
+                if (!in_array($extension, $imageExtensions, true)) {
                     // リンクテキストに拡張子とサイズを追加
                     $link_text .= " ({$extension}, {$sizeText})";
                 }
@@ -62,10 +68,11 @@ Trait SetfilesizeTrait
         $url = $this->encodeURLAttribute($url);
 
         $result = "<a href=\"$url\"";
-        if ($title) {
+        if (isset($title) && $title_quote) {
             $title = $this->encodeAttribute($title);
             $result .= " title=\"$title\"";
         }
+        $result .= $attr;
 
         $link_text = $this->runSpanGamut($link_text);
         $result .= ">$link_text</a>";

@@ -17,18 +17,11 @@ class MarkdownExtra extends BaseMarkdownExtra
     use Traits\FigcaptionTrait;
     use Traits\SetfilesizeTrait;
 
-    /**
-     * Overrides the parent transform method to process figures.
-     *
-     * @param string $text The Markdown text to be transformed.
-     * @return string The transformed text with figures.
-     */
-    public function transform(string $text): string
+    public function __construct()
     {
-        // First, process figures for images with captions.
-        $text = $this->processFigures($text);
+        // Run after fenced and indented code blocks have been protected.
+        $this->block_gamut['processFigures'] = 55;
 
-        // Use the parent class's transform method for the rest.
-        return parent::transform($text);
+        parent::__construct();
     }
 }
