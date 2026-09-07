@@ -255,3 +255,17 @@
   削除、`v2.0.0-beta.1` の作成とpush、Packagist反映確認。
 - 次にやるとよいこと: 旧タグ削除前に文書・テスト・依存を再検証し、成功時のみ
   タグの訂正を行う。
+
+### v2.0.0-beta.1訂正完了
+
+- 回帰テスト、Composer strict validate・監査、PSR-12、PHPCompatibility 7.4以降、
+  PHPStan level 5、`git diff --check` が成功した。
+- 訂正コミット `2cbc2c9` へannotated tag `v2.0.0-beta.1` を作成し、`main` と
+  新タグをGitHubへpushした。
+- 新タグがリモートで `2cbc2c9` を指すことを確認した後、旧 `v2.0.0` タグを
+  ローカルとGitHubの両方から削除した。コミットとブランチは削除していない。
+- Packagistの公開メタデータで、`v2.0.0` が消え、`v2.0.0-beta.1` が `2cbc2c9`
+  として掲載されたことを確認した。
+- beta.1への訂正に関する未完了事項はなし。
+- 次にやるとよいこと: beta期間はAPIと既存記法の実利用を検証し、変更は
+  CHANGELOGと移行ガイドに記録する。
