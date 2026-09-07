@@ -129,3 +129,17 @@
 - v1.0.9についての未完了事項はなし。
 - 次にやるとよいこと: 1.xは必要な保守に留め、CommonMark移行ロードマップに
   沿ってバージョン2の互換fixture整備から開始する。
+
+### v2.0.0公開API方針
+
+- `.codex/commonmark-migration-roadmap.md` に、v2.0.0の互換wrapperと新APIを
+  併存させる方針を追記した。
+- `Jidaikobo\MarkdownExtra`、`setTargetUrl()`、`setReplacePath()`、
+  `defaultTransform()`、インスタンスの `transform()` は互換APIとして維持する。
+- 新規コードには、immutableな `MarkdownOptions` とインスタンス単位の
+  `MarkdownConverter::convert()` を推奨する。
+- 新旧APIは同じ `league/commonmark` ベースの内部Converterを使用し、static設定と
+  新APIインスタンスの状態が混ざらないことを回帰テストで保証する。
+- 未完了: 実クラスの作成、v1互換fixture、API名とv2最低PHPバージョンの確定。
+- 次にやるとよいこと: v1.0.9の公開APIと代表的な変換結果をfixtureとして固定し、
+  `MarkdownOptions` と `MarkdownConverter` の最小インターフェースを試作する。

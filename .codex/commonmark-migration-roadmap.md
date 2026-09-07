@@ -57,20 +57,119 @@ HTMLの完全一致は保証しないが、アクセシビリティ上の意味�
 figureなどの文書構造が維持されることを重視する。変更点はバージョン2の移行文書に
 明記する。
 
-## 想定アーキテクチャ
+## v2.0.0の公開API方針
+
+v2.0.0では、既存コード向けの互換wrapperと、staticな共有状態を使わない新しい
+オブジェクトAPIを併存させる。両方のAPIは、同じ `league/commonmark` ベースの
+内部Converterと独自Extensionを使用する。
 
 ```text
-Jidaikobo\MarkdownExtra
+Jidaikobo\MarkdownExtra（互換wrapper）
+                    │
+                    ├── setTargetUrl()
+                    ├── setReplacePath()
+                    ├── defaultTransform()
+                    └── transform()
+                            │
+                            ▼
+Jidaikobo\Markdown\MarkdownConverter（新API）
+                            │
+                            ▼
+league/commonmark + 独自Extension
+```
+
+### 互換wrapper
+
+既存のクラス名とstatic setterを使う次の書き方を、v2.0.0でも許容する。
+
+```php
+use Jidaikobo\MarkdownExtra;
+
+MarkdownExtra::setTargetUrl(
+    'http://127.0.0.1:' . $serverPort
+);
+MarkdownExtra::setReplacePath(__DIR__);
+
+$renderedHtml = MarkdownExtra::defaultTransform($markdown);
+```
+
+インスタンスを作成する既存の書き方も維持する。
+
+```php
+use Jidaikobo\MarkdownExtra;
+
+$parser = new MarkdownExtra();
+$renderedHtml = $parser->transform($markdown);
+```
+
+互換wrapperは、保持している従来設定から新しいOptionsを生成し、内部Converterへ
+処理を委譲する。Michelfのパーサー実装をwrapper内で再現しない。
+
+### 新しい推奨API
+
+新規コードでは、変換器ごとに設定を保持するオブジェクトAPIを推奨する。
+
+```php
+use Jidaikobo\Markdown\MarkdownConverter;
+use Jidaikobo\Markdown\MarkdownOptions;
+
+$options = MarkdownOptions::defaults()
+    ->withBaseUrl('http://127.0.0.1:' . $serverPort)
+    ->withDocumentRoot(__DIR__);
+
+$converter = new MarkdownConverter($options);
+$renderedHtml = $converter->convert($markdown);
+```
+
+`MarkdownOptions` はimmutableな値オブジェクトとし、`with...()` は元のインスタンスを
+変更せず、新しいOptionsを返す。これにより、複数サイト、テスト、常駐プロセスで
+設定が混ざることを防ぐ。
+
+新旧APIの名称は次のように対応させる。
+
+| 互換API | 新API |
+|---|---|
+| `setTargetUrl()` | `withBaseUrl()` |
+| `setReplacePath()` | `withDocumentRoot()` |
+| `defaultTransform()` / `transform()` | `convert()` |
+| staticな共有設定 | Converterごとのimmutableな設定 |
+
+新APIでは、意味が分かりにくい `replacePath` という名称を引き継がず、公開URLに
+対応するローカルの公開ディレクトリであることを示す `documentRoot` を使用する。
+
+### API互換テスト
+
+v2.0.0では、少なくとも次を自動テストで保証する。
+
+- static setterを使う既存の呼び出しがそのまま動作する。
+- `MarkdownExtra::defaultTransform()` がHTML文字列を返す。
+- `new MarkdownExtra()->transform()` が動作する。
+- 新旧APIが同じ意味構造を出力する。
+- table、caption、figure、ファイル容量、URL補完が両方のAPIで動作する。
+- 複数の新APIインスタンス間で設定が混ざらない。
+- static互換設定が、新APIで生成済みのConverterへ影響しない。
+
+新旧APIで生成HTMLを一字一句一致させることは要件としない。要素、属性、親子関係、
+アクセシビリティ上の意味を比較する。
+
+## 内部の想定アーキテクチャ
+
+```text
+Jidaikobo\MarkdownExtra（互換wrapper）
         │
         ├── 互換用の公開メソッドと設定
         │
-        └── 内部Converter
-              ├── Michelf版（移行・比較・必要な互換用途）
-              └── league/commonmark版（バージョン2の既定）
+        └── MarkdownConverter（新APIと共通）
+                    │
+                    └── league/commonmark版（バージョン2の既定）
 ```
 
 `league/commonmark` 側では、独自のExtensionとしてパーサー、ASTノード、イベント
 リスナー、レンダラーをまとめる。文字列置換によるHTML後処理は可能な限り避ける。
+
+Michelf版は、開発中の出力比較および互換fixture作成には使用するが、v2.0.0の
+本番変換経路には残さない方針を基本とする。移行調査で必要性が判明した場合のみ、
+期間を限定した併存を再検討する。
 
 ## 段階的な移行
 
