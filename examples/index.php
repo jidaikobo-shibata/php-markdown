@@ -70,6 +70,21 @@ if ($markdown === false) {
             text-align: start;
         }
 
+        th[scope="row"] {
+            color: #1a1a1a;
+            background-color: #fff2c2;
+            border-inline-start: 0.4rem solid #8a4b00;
+            font-weight: 700;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            th[scope="row"] {
+                color: #fff;
+                background-color: #453800;
+                border-inline-start-color: #ffcc66;
+            }
+        }
+
         figure {
             margin-inline: 0;
             padding: 1rem;
