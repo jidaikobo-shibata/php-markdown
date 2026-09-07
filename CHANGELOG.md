@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file.
 - Inline link attributes are preserved when file metadata processing is enabled.
 - SVG, WebP, AVIF, and other common image links no longer receive file metadata.
 - Root-relative URL completion leaves protocol-relative URLs unchanged.
+- Composer archives exclude local dependencies, logs, and legacy browser files.
 
 ### Security
 

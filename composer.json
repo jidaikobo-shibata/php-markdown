@@ -34,5 +34,14 @@
         ],
         "codestyle": "vendor/bin/phpcs",
         "codestyle-fix": "vendor/bin/phpcbf"
+    },
+    "archive": {
+        "exclude": [
+            "/.agents",
+            "/composer.lock",
+            "/logs",
+            "/public",
+            "/vendor"
+        ]
     }
 }

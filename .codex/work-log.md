@@ -105,6 +105,8 @@
   `CHANGELOG.md` にv1.0.9の変更内容を記録した。
 - Composerのコードスタイルスクリプトを実在するPHPCSへ修正し、PSR-12設定と
   PHP 7.4以降のPHPCompatibility検査を整備した。
+- `composer archive` の内容を確認し、混入していたローカルの `vendor/`、ログ、
+  旧 `public/` などを配布アーカイブから除外する設定を追加した。
 - 確認結果: 回帰テスト、PSR-12、PHPCompatibility、PHPStan level 5、Composer
   strict validate、Composer audit、`git diff --check`はすべて正常。
 - 未完了: 利用者によるブラウザでの最終目視、v1.0.9タグ作成、push、Packagist
