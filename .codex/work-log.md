@@ -112,7 +112,9 @@
   table caption、行見出し、figure、figcaption内リンクの変換成功を確認した。
 - 確認結果: 回帰テスト、PSR-12、PHPCompatibility、PHPStan level 5、Composer
   strict validate、Composer audit、`git diff --check`はすべて正常。
-- 未完了: 利用者によるブラウザでの最終目視、v1.0.9タグ作成、push、Packagist
-  への反映確認。
+- 利用者によるブラウザでの最終目視で、レンダリング結果と複雑なfigure記法が
+  問題ないことを確認した。
+- v1.0.9タグ作成と、`main`およびタグのpushについて利用者の承認を得た。
+- 未完了: v1.0.9タグ作成、push、Packagistへの反映確認。
 - 次にやるとよいこと: 起動中のサンプルでfigureとリンク表示を目視し、問題が
   なければコミット後にv1.0.9タグを作成する。
