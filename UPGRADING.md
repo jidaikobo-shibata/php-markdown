@@ -51,6 +51,7 @@ Version 2 continues to support the documented Jidaikobo syntax and behavior:
 
 - trailing `:` table cells become row headers with `scope="row"`;
 - normal column headers receive `scope="col"`;
+- an emphasized paragraph immediately before a table becomes its caption;
 - table rows beginning with `:` become captions;
 - an image followed by an emphasized caption becomes a figure;
 - local download links can display file type and size; and
@@ -58,6 +59,10 @@ Version 2 continues to support the documented Jidaikobo syntax and behavior:
 
 The compatibility facade now delegates to the same League CommonMark engine
 as the new API. It does not contain or emulate the old Michelf parser.
+
+The leading emphasized-caption syntax is new in version 2. The table-row
+caption syntax from version 1 remains supported, so existing Markdown does not
+need to be rewritten immediately.
 
 ## Recommended migration
 
@@ -151,14 +156,18 @@ documents containing:
 - any raw HTML accepted by the application.
 
 The repository browser examples render the same Markdown through both public
-APIs:
+APIs and through a League CommonMark baseline:
 
 - `/` uses the compatibility facade;
 - `/index-v2.php` uses the recommended version 2 API.
+- `/index-commonmark.php` uses only League's Core, Table, and Attributes
+  extensions, without the Jidaikobo extension.
 
-These pages confirm API equivalence within version 2. To investigate parsing
-differences from the released version 1 engine, compare against the immutable
-`v1.0.9` tag or an application test environment pinned to `^1.0`.
+The first two pages confirm API equivalence within version 2. The baseline
+shows whether custom markers and content remain readable when the Jidaikobo
+extension is absent. To investigate parsing differences from the released
+version 1 engine, compare against the immutable `v1.0.9` tag or an application
+test environment pinned to `^1.0`.
 
 ## Security-related behavior
 

@@ -110,10 +110,12 @@ if ($markdown === false) {
 <body>
     <header>
         <h1>Jidaikobo Markdown バージョン2新API表示確認</h1>
-        <nav aria-label="サンプルAPIの切り替え">
+        <nav aria-label="サンプル変換方式の切り替え">
             <a href="index.php">互換API</a>
             <span aria-hidden="true"> / </span>
             <strong aria-current="page">バージョン2新API</strong>
+            <span aria-hidden="true"> / </span>
+            <a href="index-commonmark.php">League標準Extensionのみ</a>
         </nav>
         <p>
             このページは <code>MarkdownOptions</code> と

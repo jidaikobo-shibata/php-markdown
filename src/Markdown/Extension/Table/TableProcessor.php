@@ -2,40 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Jidaikobo\Markdown\Extension;
+namespace Jidaikobo\Markdown\Extension\Table;
 
-use Jidaikobo\Markdown\Extension\Node\Figcaption;
-use Jidaikobo\Markdown\Extension\Node\Figure;
-use Jidaikobo\Markdown\Extension\Node\TableCaption;
-use Jidaikobo\Markdown\MarkdownOptions;
+use Jidaikobo\Markdown\Extension\Table\Node\TableCaption;
 use League\CommonMark\Event\DocumentParsedEvent;
 use League\CommonMark\Extension\CommonMark\Node\Inline\Emphasis;
-use League\CommonMark\Extension\CommonMark\Node\Inline\Image;
-use League\CommonMark\Extension\CommonMark\Node\Inline\Link;
 use League\CommonMark\Extension\Table\Table;
 use League\CommonMark\Extension\Table\TableCell;
 use League\CommonMark\Extension\Table\TableRow;
 use League\CommonMark\Extension\Table\TableSection;
-use League\CommonMark\Node\Inline\Newline;
+use League\CommonMark\Node\Block\Paragraph;
 use League\CommonMark\Node\Inline\Text;
 use League\CommonMark\Node\Node;
-use League\CommonMark\Node\Block\Paragraph;
 
 /**
- * Applies Jidaikobo syntax to the parsed node tree.
+ * Adds accessible headers and captions to parsed League table nodes.
  */
-final class MarkdownProcessor
+final class TableProcessor
 {
-    private MarkdownOptions $options;
-
-    private LocalFileResolver $fileResolver;
-
-    public function __construct(MarkdownOptions $options)
-    {
-        $this->options = $options;
-        $this->fileResolver = new LocalFileResolver($options);
-    }
-
     public function __invoke(DocumentParsedEvent $event): void
     {
         $nodes = iterator_to_array($event->getDocument()->iterator(), false);
@@ -48,19 +32,13 @@ final class MarkdownProcessor
 
         foreach ($nodes as $node) {
             if ($node instanceof TableRow) {
-                $this->processCaptionRow($node);
+                $this->processLegacyCaptionRow($node);
             }
         }
 
         foreach ($nodes as $node) {
-            if ($node instanceof Paragraph) {
-                $this->processFigure($node);
-            }
-        }
-
-        foreach ($nodes as $node) {
-            if ($node instanceof Link) {
-                $this->processLink($node);
+            if ($node instanceof Table) {
+                $this->processLeadingCaption($node);
             }
         }
     }
@@ -78,7 +56,7 @@ final class MarkdownProcessor
         }
     }
 
-    private function processCaptionRow(TableRow $row): void
+    private function processLegacyCaptionRow(TableRow $row): void
     {
         $section = $row->parent();
         if (! $section instanceof TableSection || ! $section->isBody()) {
@@ -104,57 +82,37 @@ final class MarkdownProcessor
         $table->prependChild($caption);
     }
 
-    private function processFigure(Paragraph $paragraph): void
+    private function processLeadingCaption(Table $table): void
     {
-        $children = iterator_to_array($paragraph->children(), false);
-        if (
-            count($children) !== 3 ||
-            ! $children[0] instanceof Image ||
-            ! $children[1] instanceof Newline ||
-            ! $children[2] instanceof Emphasis
-        ) {
+        if ($table->firstChild() instanceof TableCaption) {
             return;
         }
 
-        $image = $children[0];
-        $emphasis = $children[2];
-        $figure = new Figure();
-        $figcaption = new Figcaption();
-
-        $figure->appendChild($image);
-        foreach ($emphasis->children() as $child) {
-            $figcaption->appendChild($child);
+        $paragraph = $table->previous();
+        if (! $paragraph instanceof Paragraph || ! $this->isDirectlyBefore($paragraph, $table)) {
+            return;
         }
-        $figure->appendChild($figcaption);
-        $paragraph->replaceWith($figure);
+
+        $children = iterator_to_array($paragraph->children(), false);
+        if (count($children) !== 1 || ! $children[0] instanceof Emphasis) {
+            return;
+        }
+
+        $caption = new TableCaption();
+        foreach ($children[0]->children() as $child) {
+            $caption->appendChild($child);
+        }
+
+        $paragraph->detach();
+        $table->prependChild($caption);
     }
 
-    private function processLink(Link $link): void
+    private function isDirectlyBefore(Paragraph $paragraph, Table $table): bool
     {
-        $url = $link->getUrl();
-        $baseUrl = $this->options->getBaseUrl();
+        $paragraphEnd = $paragraph->getEndLine();
+        $tableStart = $table->getStartLine();
 
-        if ($baseUrl !== '' && strncmp($url, '/', 1) === 0 && strncmp($url, '//', 2) !== 0) {
-            $url = $baseUrl . $url;
-            $link->setUrl($url);
-        }
-
-        $localPath = $this->fileResolver->resolve($url);
-        if ($localPath === null || $this->isImage($localPath)) {
-            return;
-        }
-
-        $size = filesize($localPath);
-        if ($size === false) {
-            return;
-        }
-
-        $extension = strtolower((string) pathinfo($localPath, PATHINFO_EXTENSION));
-        $link->appendChild(new Text(sprintf(
-            ' (%s, %s)',
-            $extension,
-            $this->formatFileSize($size)
-        )));
+        return $paragraphEnd !== null && $tableStart !== null && $paragraphEnd + 1 === $tableStart;
     }
 
     private function removeTrailingColon(TableCell $cell): bool
@@ -218,29 +176,5 @@ final class MarkdownProcessor
         $attributes = (array) $node->data->get('attributes');
         $attributes[$name] = $value;
         $node->data->set('attributes', $attributes);
-    }
-
-    private function isImage(string $path): bool
-    {
-        $extension = strtolower((string) pathinfo($path, PATHINFO_EXTENSION));
-
-        return in_array($extension, [
-            'png', 'apng', 'jpg', 'jpeg', 'jpe', 'jfif', 'pjpeg', 'pjp',
-            'gif', 'bmp', 'tif', 'tiff', 'ico', 'svg', 'svgz', 'webp', 'avif',
-        ], true);
-    }
-
-    private function formatFileSize(int $size): string
-    {
-        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
-        $unitIndex = 0;
-        $displaySize = (float) $size;
-
-        while ($displaySize >= 1024 && $unitIndex < count($units) - 1) {
-            $displaySize /= 1024;
-            $unitIndex++;
-        }
-
-        return round($displaySize, 1) . ' ' . $units[$unitIndex];
     }
 }

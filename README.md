@@ -123,7 +123,22 @@ The colon is a syntax marker and is not included in the rendered cell text.
 
 ### Table captions and attributes
 
-A table row beginning with a colon becomes the table caption:
+The preferred syntax is an emphasized paragraph immediately before the table,
+with no blank line between them:
+
+```markdown
+*Results for the current period*
+| Name  | Value |
+|-------|-------|
+| Alice | 10    |
+```
+
+Without the Jidaikobo extension, this remains readable as an emphasized
+paragraph followed by a table. A blank line keeps the emphasized paragraph
+separate and prevents caption conversion.
+
+The version 1 syntax, where a table row begins with a colon, remains supported
+for backward compatibility:
 
 ```markdown
 | Name  | Value |
@@ -136,10 +151,10 @@ League CommonMark attributes can follow the table without preventing caption
 generation:
 
 ```markdown
+*Results*
 | Name  | Value |
 |-------|-------|
 | Alice | 10    |
-|: Results
 {#results .summary}
 ```
 
@@ -206,12 +221,14 @@ root:
 php -S 127.0.0.1:8000 -t examples
 ```
 
-Then compare the two entry points:
+Then compare the three entry points:
 
 - <http://127.0.0.1:8000/> uses the version 1 compatibility facade.
 - <http://127.0.0.1:8000/index-v2.php> uses the recommended version 2 API.
+- <http://127.0.0.1:8000/index-commonmark.php> uses only League CommonMark's
+  Core, Table, and Attributes extensions as a graceful-degradation baseline.
 
-Both pages render the same `examples/sample.md`.
+All three pages render the same `examples/sample.md`.
 
 ## Development
 

@@ -167,6 +167,16 @@ Jidaikobo\MarkdownExtra（互換wrapper）
 `league/commonmark` 側では、独自のExtensionとしてパーサー、ASTノード、イベント
 リスナー、レンダラーをまとめる。文字列置換によるHTML後処理は可能な限り避ける。
 
+独自実装は一つの大きなProcessorに集約せず、利用者から見て独立した機能単位の
+Extensionに分ける。当面は次の3単位とする。
+
+- `AccessibleTableExtension`: 列・行見出しと新旧table caption記法
+- `FigureExtension`: figure/figcaption記法
+- `LinkEnhancementExtension`: ルート相対URL補完とローカルファイル情報
+
+公式に存在する機能は再実装せず、League CommonMark付属のExtensionを必要に応じて
+登録する。外部向けAPIは引き続き `MarkdownConverter` と `MarkdownOptions` にまとめる。
+
 Michelf版は、開発中の出力比較および互換fixture作成には使用するが、v2.0.0の
 本番変換経路には残さない方針を基本とする。移行調査で必要性が判明した場合のみ、
 期間を限定した併存を再検討する。

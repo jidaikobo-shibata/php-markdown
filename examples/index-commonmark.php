@@ -2,7 +2,11 @@
 
 declare(strict_types=1);
 
-use Jidaikobo\MarkdownExtra;
+use League\CommonMark\Environment\Environment;
+use League\CommonMark\Extension\Attributes\AttributesExtension;
+use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
+use League\CommonMark\Extension\Table\TableExtension;
+use League\CommonMark\MarkdownConverter;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -13,19 +17,22 @@ if ($markdown === false) {
     http_response_code(500);
     $renderedHtml = '<p role="alert">sample.md を読み込めませんでした。</p>';
 } else {
-    $serverPort = filter_var(
-        $_SERVER['SERVER_PORT'] ?? 8000,
-        FILTER_VALIDATE_INT,
-        ['options' => ['min_range' => 1, 'max_range' => 65535]]
-    );
+    $environment = new Environment([
+        'html_input' => 'allow',
+        'allow_unsafe_links' => false,
+        'max_nesting_level' => 100,
+        'max_delimiters_per_line' => 1000,
+        'attributes' => [
+            'allow' => ['id', 'class', 'lang', 'title', 'rel'],
+        ],
+    ]);
 
-    if ($serverPort === false) {
-        $serverPort = 8000;
-    }
+    $environment->addExtension(new CommonMarkCoreExtension());
+    $environment->addExtension(new TableExtension());
+    $environment->addExtension(new AttributesExtension());
 
-    MarkdownExtra::setTargetUrl('http://127.0.0.1:' . $serverPort);
-    MarkdownExtra::setReplacePath(__DIR__);
-    $renderedHtml = MarkdownExtra::defaultTransform($markdown);
+    $converter = new MarkdownConverter($environment);
+    $renderedHtml = $converter->convert($markdown)->getContent();
 }
 ?>
 <!DOCTYPE html>
@@ -33,7 +40,7 @@ if ($markdown === false) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>互換API - Jidaikobo MarkdownExtra 表示確認</title>
+    <title>League標準Extensionのみ - Markdown表示確認</title>
     <style>
         :root {
             color-scheme: light dark;
@@ -105,19 +112,25 @@ if ($markdown === false) {
 </head>
 <body>
     <header>
-        <h1>Jidaikobo MarkdownExtra 互換API表示確認</h1>
+        <h1>League CommonMark標準Extensionのみの表示確認</h1>
         <nav aria-label="サンプル変換方式の切り替え">
-            <strong aria-current="page">互換API</strong>
+            <a href="index.php">互換API</a>
             <span aria-hidden="true"> / </span>
             <a href="index-v2.php">バージョン2新API</a>
             <span aria-hidden="true"> / </span>
-            <a href="index-commonmark.php">League標準Extensionのみ</a>
+            <strong aria-current="page">League標準Extensionのみ</strong>
         </nav>
         <p>
-            このページは <code>Jidaikobo\MarkdownExtra</code> と
-            static setterを使う、バージョン1からの互換APIを確認します。
+            このページはLeague CommonMark公式の
+            <code>CommonMarkCoreExtension</code>、<code>TableExtension</code>、
+            <code>AttributesExtension</code>だけを使います。
+            Jidaikoboの独自Extensionは適用しません。
         </p>
-        <p>以下は <code>examples/sample.md</code> の現在の変換結果です。</p>
+        <p>
+            独自記法の記号と内容が欠落せず、通常のMarkdownとして
+            どのように読めるかを確認するためのベースラインです。
+        </p>
+        <p>以下は <code>examples/sample.md</code> の変換結果です。</p>
     </header>
     <main>
         <?= $renderedHtml ?>

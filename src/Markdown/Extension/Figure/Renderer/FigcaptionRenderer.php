@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Jidaikobo\Markdown\Extension\Renderer;
+namespace Jidaikobo\Markdown\Extension\Figure\Renderer;
 
-use Jidaikobo\Markdown\Extension\Node\TableCaption;
+use Jidaikobo\Markdown\Extension\Figure\Node\Figcaption;
 use League\CommonMark\Node\Node;
 use League\CommonMark\Renderer\ChildNodeRendererInterface;
 use League\CommonMark\Renderer\NodeRendererInterface;
 use League\CommonMark\Util\HtmlElement;
 
-final class TableCaptionRenderer implements NodeRendererInterface
+final class FigcaptionRenderer implements NodeRendererInterface
 {
     public function render(Node $node, ChildNodeRendererInterface $childRenderer): \Stringable
     {
-        TableCaption::assertInstanceOf($node);
+        Figcaption::assertInstanceOf($node);
 
-        return new HtmlElement('caption', [], $childRenderer->renderNodes($node->children()));
+        return new HtmlElement('figcaption', [], $childRenderer->renderNodes($node->children()));
     }
 }

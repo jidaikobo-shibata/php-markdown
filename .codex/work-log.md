@@ -269,3 +269,42 @@
 - beta.1への訂正に関する未完了事項はなし。
 - 次にやるとよいこと: beta期間はAPIと既存記法の実利用を検証し、変更は
   CHANGELOGと移行ガイドに記録する。
+
+### League CommonMark標準Extensionのみのベースライン
+
+- `examples/index-commonmark.php` を追加し、同じ `sample.md` をLeague公式の
+  `CommonMarkCoreExtension`、`TableExtension`、`AttributesExtension` だけで変換するようにした。
+- Jidaikoboの独自Extensionを外したとき、行見出しの末尾 `:`、表captionの先頭 `:`、
+  画像直後の強調caption、ルート相対リンクが欠落せず、通常のMarkdownとして
+  読めることを確認できるページとした。
+- 既存の互換API・v2新APIページと相互リンクし、READMEと移行ガイドにも
+  3つ目の比較ページとして記載した。
+- 回帰テストでベースラインページをincludeし、独自変換が行われないことと、
+  独自記法の内容が残ることを検査するようにした。
+- 理由: 「プレーンテキストの状態でも読みやすい」という方針を、独自Extensionによる
+  最終HTMLだけでなく、独自処理を外した出力からも確認できるようにするため。
+- 未完了: PHP組み込みWebサーバーでのHTTP確認と利用者の目視確認、コミット。
+- 次にやるとよいこと: 3ページを比較し、独自記法が変換前・ベースライン変換後の
+  どちらでも理解可能かを確認する。
+
+### 前置table caption記法と機能単位Extension
+
+- 強調だけの段落が空行なしでtableの直前にある場合、その子ASTノードを
+  `TableCaption` へ移す新しい記法を追加した。リンクやコードなどの入れ子も維持する。
+- 段落の終了行とtableの開始行が連続している場合だけをcaptionとし、空行があれば
+  通常の強調段落として残す。正規表現の先読みではなく、Tableの直前の兄弟ノードと
+  ASTの行番号で判定する。
+- v1の `|: caption` 記法は下位互換のため維持し、新規文書には前置記法を
+  推奨する。サンプルでは新旧の両方を確認できる。
+- 一つの `JidaikoboExtension` / `MarkdownProcessor` に集約していた処理を、
+  `AccessibleTableExtension`、`FigureExtension`、`LinkEnhancementExtension` に分割した。
+- 各機能ディレクトリ内にExtension、Processor、必要なNodeとRendererを配置し、
+  `MarkdownConverter` が機能単位でEnvironmentへ登録するLeague CommonMarkの構成に寄せた。
+- README、CHANGELOG、移行ガイド、移行ロードマップを新記法と機能分割に合わせて
+  更新した。
+- 確認結果: 回帰テスト、Composer strict validate、PSR-12、PHPCompatibility 7.4以降、
+  PHPStan level 5、`git diff --check` が成功した。3ページはすべてHTTP 200で、互換APIと
+  v2 APIの `<main>` 出力が一致した。ベースラインでは前置captionが強調段落と表になる。
+- 未完了: 利用者の目視確認。実装と自動検査はコミット可能な状態。
+- 次にやるとよいこと: 新captionのインライン構造、空行による非変換、旧記法の維持を
+  自動テストとブラウザーで確認する。

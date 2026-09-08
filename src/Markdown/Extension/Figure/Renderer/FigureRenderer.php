@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Jidaikobo\Markdown\Extension\Renderer;
+namespace Jidaikobo\Markdown\Extension\Figure\Renderer;
 
-use Jidaikobo\Markdown\Extension\Node\Figure;
+use Jidaikobo\Markdown\Extension\Figure\Node\Figure;
 use League\CommonMark\Node\Node;
 use League\CommonMark\Renderer\ChildNodeRendererInterface;
 use League\CommonMark\Renderer\NodeRendererInterface;

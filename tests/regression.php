@@ -130,6 +130,40 @@ assertContains(
     'Protocol-relative URLs must not be completed as root-relative URLs.'
 );
 
+$leadingCaption = <<<'MARKDOWN'
+*Caption with [a link](https://example.com/table) and `code`*
+| Column | Value |
+| --- | --- |
+| A | 10 |
+MARKDOWN;
+
+$leadingCaptionHtml = MarkdownExtra::defaultTransform($leadingCaption);
+assertContains(
+    '<caption>Caption with <a href="https://example.com/table">a link</a> and ' .
+    '<code>code</code></caption>',
+    $leadingCaptionHtml,
+    'An emphasized paragraph directly before a table should become its caption.'
+);
+assertNotContains(
+    '<p><em>Caption with',
+    $leadingCaptionHtml,
+    'A converted leading table caption must not remain as a paragraph.'
+);
+
+$separateEmphasis = str_replace("code`*\n|", "code`*\n\n|", $leadingCaption);
+$separateEmphasisHtml = MarkdownExtra::defaultTransform($separateEmphasis);
+assertContains(
+    '<p><em>Caption with <a href="https://example.com/table">a link</a> and ' .
+    '<code>code</code></em></p>',
+    $separateEmphasisHtml,
+    'A blank line should keep emphasized text separate from the table.'
+);
+assertNotContains(
+    '<caption>',
+    $separateEmphasisHtml,
+    'Emphasized text separated by a blank line must not become a table caption.'
+);
+
 $notStandalone = <<<'MARKDOWN'
 ![Sample](files/sample-image.svg) trailing text
 *This remains emphasis*
@@ -229,6 +263,7 @@ if ($defaults->getBaseUrl() !== '' || $configured->getBaseUrl() !== 'https://exa
 $_SERVER['SERVER_PORT'] = 8000;
 $compatibilityExample = renderExample(__DIR__ . '/../examples/index.php');
 $versionTwoExample = renderExample(__DIR__ . '/../examples/index-v2.php');
+$commonMarkExample = renderExample(__DIR__ . '/../examples/index-commonmark.php');
 assertContains(
     'Jidaikobo MarkdownExtra 互換API表示確認',
     $compatibilityExample,
@@ -241,5 +276,55 @@ assertContains(
 );
 assertContains('<figure>', $compatibilityExample, 'The compatibility example should render custom syntax.');
 assertContains('<figure>', $versionTwoExample, 'The version 2 example should render custom syntax.');
+assertContains(
+    '<p><em>この強調文はcaptionではありません</em></p>',
+    $compatibilityExample,
+    'The compatibility example should show that a blank line prevents caption conversion.'
+);
+assertContains(
+    '<p><em>この強調文はcaptionではありません</em></p>',
+    $versionTwoExample,
+    'The version 2 example should show that a blank line prevents caption conversion.'
+);
+assertContains(
+    'League CommonMark標準Extensionのみの表示確認',
+    $commonMarkExample,
+    'The standard League CommonMark baseline example should render.'
+);
+assertContains(
+    '<td>月曜日:</td>',
+    $commonMarkExample,
+    'Row-header markers should remain readable without the Jidaikobo extension.'
+);
+assertContains(
+    '<p><em>2026年9月時点の地域別人数</em></p>',
+    $commonMarkExample,
+    'A leading table caption should remain readable without the Jidaikobo extension.'
+);
+assertContains(
+    '<td>: 属性指定を試した表のキャプション</td>',
+    $commonMarkExample,
+    'Legacy table-caption text should remain readable without the Jidaikobo extension.'
+);
+assertContains(
+    '<a href="/files/download.txt">ローカルの小さな文書</a>',
+    $commonMarkExample,
+    'Root-relative links should remain ordinary links in the baseline.'
+);
+assertNotContains(
+    '<caption>',
+    $commonMarkExample,
+    'The standard League extensions must not apply Jidaikobo table captions.'
+);
+assertNotContains(
+    '<figure>',
+    $commonMarkExample,
+    'The standard League extensions must not apply Jidaikobo figures.'
+);
+assertNotContains(
+    'ローカルの小さな文書 (txt,',
+    $commonMarkExample,
+    'The standard League extensions must not add local file metadata.'
+);
 
 fwrite(STDOUT, "All regression checks passed.\n");

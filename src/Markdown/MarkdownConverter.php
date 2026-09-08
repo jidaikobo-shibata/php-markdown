@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Jidaikobo\Markdown;
 
-use Jidaikobo\Markdown\Extension\JidaikoboExtension;
+use Jidaikobo\Markdown\Extension\Figure\FigureExtension;
+use Jidaikobo\Markdown\Extension\Link\LinkEnhancementExtension;
+use Jidaikobo\Markdown\Extension\Table\AccessibleTableExtension;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\Attributes\AttributesExtension;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
@@ -34,7 +36,9 @@ final class MarkdownConverter
         $environment->addExtension(new CommonMarkCoreExtension());
         $environment->addExtension(new TableExtension());
         $environment->addExtension(new AttributesExtension());
-        $environment->addExtension(new JidaikoboExtension($options));
+        $environment->addExtension(new AccessibleTableExtension());
+        $environment->addExtension(new FigureExtension());
+        $environment->addExtension(new LinkEnhancementExtension($options));
 
         $this->converter = new LeagueMarkdownConverter($environment);
     }

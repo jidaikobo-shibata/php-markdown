@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Jidaikobo\Markdown\Extension;
+namespace Jidaikobo\Markdown\Extension\Link;
 
 use Jidaikobo\Markdown\MarkdownOptions;
 

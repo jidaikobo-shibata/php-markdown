@@ -10,7 +10,11 @@ All notable changes to this project will be documented in this file.
 - A per-instance `Jidaikobo\Markdown\MarkdownConverter` API.
 - AST nodes and renderers for table captions and figures.
 - Separate browser examples for the compatibility facade and version 2 API.
+- A standard League CommonMark baseline example for checking how custom syntax
+  degrades when the Jidaikobo extension is disabled.
 - A version 2 upgrade guide and a frozen version 1.0.9 README archive.
+- A readable leading table-caption syntax using an emphasized paragraph
+  immediately before the table.
 
 ### Changed
 
@@ -19,6 +23,8 @@ All notable changes to this project will be documented in this file.
   parsed syntax tree instead of by regular-expression HTML rewriting.
 - `Jidaikobo\MarkdownExtra` is now a compatibility facade over the new
   converter.
+- Jidaikobo processing is divided into table, figure, and link feature
+  extensions, each with its own processor and registrations.
 
 ### Removed
 
