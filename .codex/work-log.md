@@ -440,3 +440,15 @@
   Composer strict validate・audit、`git diff --check`が成功した。
 - 未完了: リリースコミット、annotated tag作成、mainとタグのpush、Packagist反映確認。
 - 次にやること: 検証済みの変更をコミットし、配布アーカイブ確認後にタグ付けする。
+
+### v2.0.0-beta.2リリース完了
+
+- リリースコミット `8b39aab` にannotated tag `v2.0.0-beta.2` を作成し、`main`と
+  タグをGitHubの `origin` へpushした。
+- Composer配布アーカイブを隔離展開し、`--no-dev`で直接本番依存が
+  `league/commonmark 2.10.1`だけになることと、互換APIによるnote変換を確認した。
+- リモートのtagが `8b39aab` を指すこと、およびPackagistの `v2.0.0-beta.2` が
+  同じsource commitで公開されたことを確認した。
+- beta.2リリースに関する未完了事項はなし。
+- 次にやるとよいこと: 実利用側でbeta.2を評価し、安定版までに必要な記法や
+  アクセシビリティ上の調整を整理する。
