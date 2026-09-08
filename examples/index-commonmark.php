@@ -119,6 +119,10 @@ if ($markdown === false) {
             <a href="index-v2.php">バージョン2新API</a>
             <span aria-hidden="true"> / </span>
             <strong aria-current="page">League標準Extensionのみ</strong>
+            <span aria-hidden="true"> / </span>
+            <a href="index-pico.php">Pico CSS Classless</a>
+            <span aria-hidden="true"> / </span>
+            <a href="index-bootstrap.php">Bootstrap 5</a>
         </nav>
         <p>
             このページはLeague CommonMark公式の

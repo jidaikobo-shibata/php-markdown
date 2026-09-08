@@ -221,14 +221,20 @@ root:
 php -S 127.0.0.1:8000 -t examples
 ```
 
-Then compare the three entry points:
+Then compare the five entry points:
 
 - <http://127.0.0.1:8000/> uses the version 1 compatibility facade.
 - <http://127.0.0.1:8000/index-v2.php> uses the recommended version 2 API.
 - <http://127.0.0.1:8000/index-commonmark.php> uses only League CommonMark's
   Core, Table, and Attributes extensions as a graceful-degradation baseline.
+- <http://127.0.0.1:8000/index-pico.php> uses the recommended version 2 API
+  and applies the locally stored Pico CSS 2.1.1 Classless stylesheet without
+  custom table or figure styles.
+- <http://127.0.0.1:8000/index-bootstrap.php> applies locally stored Bootstrap
+  5.3.8 CSS and a demo-only AST extension which adds Bootstrap classes to
+  tables and figures. It does not define a public Bootstrap integration API.
 
-All three pages render the same `examples/sample.md`.
+All five pages render the same `examples/sample.md`.
 
 ## Development
 

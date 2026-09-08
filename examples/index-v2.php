@@ -116,6 +116,10 @@ if ($markdown === false) {
             <strong aria-current="page">バージョン2新API</strong>
             <span aria-hidden="true"> / </span>
             <a href="index-commonmark.php">League標準Extensionのみ</a>
+            <span aria-hidden="true"> / </span>
+            <a href="index-pico.php">Pico CSS Classless</a>
+            <span aria-hidden="true"> / </span>
+            <a href="index-bootstrap.php">Bootstrap 5</a>
         </nav>
         <p>
             このページは <code>MarkdownOptions</code> と

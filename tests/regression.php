@@ -264,6 +264,8 @@ $_SERVER['SERVER_PORT'] = 8000;
 $compatibilityExample = renderExample(__DIR__ . '/../examples/index.php');
 $versionTwoExample = renderExample(__DIR__ . '/../examples/index-v2.php');
 $commonMarkExample = renderExample(__DIR__ . '/../examples/index-commonmark.php');
+$picoExample = renderExample(__DIR__ . '/../examples/index-pico.php');
+$bootstrapExample = renderExample(__DIR__ . '/../examples/index-bootstrap.php');
 assertContains(
     'Jidaikobo MarkdownExtra 互換API表示確認',
     $compatibilityExample,
@@ -290,6 +292,47 @@ assertContains(
     'League CommonMark標準Extensionのみの表示確認',
     $commonMarkExample,
     'The standard League CommonMark baseline example should render.'
+);
+assertContains(
+    'Pico CSS Classless表示確認',
+    $picoExample,
+    'The Pico CSS browser example should render.'
+);
+assertContains(
+    'assets/vendor/pico/pico.classless.min.css',
+    $picoExample,
+    'The Pico CSS browser example should use the locally stored stylesheet.'
+);
+assertContains('<figure>', $picoExample, 'The Pico CSS example should render custom syntax.');
+assertContains(
+    'Bootstrap 5表示確認',
+    $bootstrapExample,
+    'The Bootstrap browser example should render.'
+);
+assertContains(
+    'assets/vendor/bootstrap/bootstrap.min.css',
+    $bootstrapExample,
+    'The Bootstrap browser example should use the locally stored stylesheet.'
+);
+assertContains(
+    'class="table table-striped table-bordered align-middle"',
+    $bootstrapExample,
+    'The Bootstrap example should add table presentation classes through the AST.'
+);
+assertContains(
+    '<figure class="figure">',
+    $bootstrapExample,
+    'The Bootstrap example should add a figure class through the AST.'
+);
+assertContains(
+    'class="sample-image figure-img img-fluid rounded"',
+    $bootstrapExample,
+    'The Bootstrap example should preserve author classes while adding image classes.'
+);
+assertContains(
+    '<figcaption class="figure-caption">',
+    $bootstrapExample,
+    'The Bootstrap example should add a figcaption class through the AST.'
 );
 assertContains(
     '<td>月曜日:</td>',

@@ -112,6 +112,10 @@ if ($markdown === false) {
             <a href="index-v2.php">バージョン2新API</a>
             <span aria-hidden="true"> / </span>
             <a href="index-commonmark.php">League標準Extensionのみ</a>
+            <span aria-hidden="true"> / </span>
+            <a href="index-pico.php">Pico CSS Classless</a>
+            <span aria-hidden="true"> / </span>
+            <a href="index-bootstrap.php">Bootstrap 5</a>
         </nav>
         <p>
             このページは <code>Jidaikobo\MarkdownExtra</code> と

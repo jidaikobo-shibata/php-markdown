@@ -4,10 +4,11 @@
 
     <arg name="colors"/>
     <arg value="ps"/>
+    <arg name="extensions" value="php"/>
 
     <file>src</file>
     <file>tests</file>
-    <file>examples/index.php</file>
+    <file>examples</file>
 
     <rule ref="PSR12"/>
 </ruleset>

@@ -308,3 +308,45 @@
 - 未完了: 利用者の目視確認。実装と自動検査はコミット可能な状態。
 - 次にやるとよいこと: 新captionのインライン構造、空行による非変換、旧記法の維持を
   自動テストとブラウザーで確認する。
+
+### Pico CSS Classless比較ページ
+
+- `examples/index-pico.php` を追加し、v2推奨APIで同じ `sample.md` を変換した結果に
+  Pico CSS 2.1.1のClassless版だけを適用する比較ページを用意した。
+- 以前のサンプル要件どおり外部CDNなしで確認できるよう、公式配布CSSとMIT
+  Licenseを `examples/assets/vendor/pico/` にローカル配置し、バージョン、取得元、
+  SHA-256を記録した。独自の表・figure用CSSは加えず、Pico本来の表示を確認する。
+- 既存3ページからPico比較ページへ移動できるリンクを追加し、READMEと回帰テストも
+  4ページ構成に更新した。
+- PHPCompatibilityがローカル配置したminified CSSを誤って検査しないよう、対象拡張子を
+  `php` に限定した。
+- 確認結果: 4ページのPHP構文、回帰テスト、PSR-12、PHP 7.4互換検査、PHPStan
+  level 5、Composer strict validate・audit、`git diff --check`が成功した。Picoページと
+  ローカルCSSはいずれも組み込みWebサーバーでHTTP 200となり、CSSのSHA-256も一致した。
+- 利用者がPicoの表を含む外観を目視し、比較候補として問題ないことを確認した。
+- 未完了: Pico用の最小追加CSSを正式に用意するかどうかの判断。
+- 次にやるとよいこと: Pico本来の表示を確認し、必要ならアクセシビリティ上必要な
+  最小追加CSSだけを別途検討する。
+
+### Bootstrap 5比較ページ
+
+- `examples/index-bootstrap.php` を追加し、同じ `sample.md` にBootstrap 5.3.8を
+  適用してPico Classless版と比較できるようにした。
+- デモ専用の `examples/Support/Bootstrap5Extension.php` などを用意し、HTML文字列の
+  置換ではなく解析後のASTに、table・figure・画像・figcaption用のBootstrap classを
+  付与する構成にした。公開APIとしてのBootstrap対応はまだ定義していない。
+- 表には基本classに加えてstriped・bordered・vertical alignmentを、figureには
+  Bootstrap公式のfigure・responsive image・caption classを付与した。Markdown側の
+  既存classが失われないことも回帰テストへ追加した。
+- 外部CDNなしで表示できるよう公式CSSとMIT Licenseをローカル配置し、取得元、
+  バージョン、SHA-256を記録した。Bootstrap JavaScriptは使用しない。
+- PSR-12設定を `examples/index.php` だけでなく `examples/` 内のPHP全体へ広げ、
+  vendor CSSを対象外にするため検査拡張子を `php` に限定した。
+- 確認結果: PHP構文、回帰テスト、PSR-12、PHP 7.4互換検査、PHPStan level 5、
+  Composer strict validate・audit、`git diff --check`が成功した。Bootstrapページと
+  ローカルCSSはいずれもHTTP 200で、CSSのSHA-256と主要なclass・構造も一致した。
+- 利用者がPico版とBootstrap版の外観を目視し、両方の方向性に魅力があることを
+  確認した。
+- 未完了: 公開APIとしてレンダリングプロファイルを提供するかどうかの判断。
+- 次にやるとよいこと: Pico版とBootstrap版を見比べ、公開APIとしてレンダリング
+  プロファイルを持つ価値があるか判断する。
