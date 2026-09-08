@@ -21,7 +21,7 @@ Version 1 constraints do not install version 2 automatically:
 After reviewing this guide, opt in to the current version 2 beta explicitly:
 
 ```bash
-composer require jidaikobo/php-markdown:2.0.0-beta.1
+composer require jidaikobo/php-markdown:2.0.0-beta.2
 ```
 
 Do not change a production constraint to `^2.0` until a stable version 2 has

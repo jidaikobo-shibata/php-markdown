@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2.0.0-beta.2 - 2026-09-08
+
+### Added
+
 - Enable League CommonMark heading permalinks and placeholder-based tables of
   contents.
 - Add English and Japanese Markdown cheat sheets with source and rendered
@@ -12,6 +16,12 @@ All notable changes to this project will be documented in this file.
   variants. All use the static-document `note` role and may have a visible,
   accessible label.
 - Add fenced native `aside` and `details` blocks with nested Markdown support.
+
+### Changed
+
+- Add Bootstrap presentation classes to the browser example through an
+  example-only extension, including accessible `alert-link` colors for links
+  inside notes.
 
 ## 2.0.0-beta.1 - 2026-09-08
 
