@@ -105,7 +105,66 @@ The package instead preserves the documented custom syntax, destinations,
 document structure, and accessibility semantics. See the
 [migration guide](UPGRADING.md) for details.
 
+## Cheat sheets
+
+- [English Markdown cheat sheet](docs/cheatsheet.md)
+- [日本語Markdownチートシート](docs/cheatsheet-ja.md)
+
+Each document places its Markdown source immediately before the rendered
+example. Four generated static HTML pages provide Pico CSS and Bootstrap 5
+presentations in both languages; viewing them does not execute PHP.
+
+## Enabled League extensions
+
+Heading permalinks are enabled for heading levels 1 through 6. Add `[TOC]` on
+its own line to generate a table of contents at that position. The table of
+contents includes heading levels 2 through 4 and is limited to 100 entries per
+document. A document without the placeholder does not receive a table of
+contents automatically.
+
 ## Custom Markdown syntax
+
+### Notes, asides, and disclosure blocks
+
+Use a fenced note for ancillary information. The optional note variant is
+`info` (the default), `warn`, or `alert`. All three render with `role="note"`;
+the variant changes a fixed CSS class only. In particular, the static `alert`
+variant does not create an ARIA live-region alert.
+
+```markdown
+::: note info "Reference information"
+This note can contain **normal Markdown**, lists, links, and code blocks.
+:::
+```
+
+```html
+<div class="note note-info" role="note" aria-labelledby="jidaikobo-note-1-label">
+  <p id="jidaikobo-note-1-label" class="note-label">Reference information</p>
+  <p>This note can contain <strong>normal Markdown</strong>, lists, links, and code blocks.</p>
+</div>
+```
+
+The quoted visible title is optional. When present, it labels the note with
+`aria-labelledby`. Use an `aside` fence for content tangentially related to
+the surrounding content:
+
+```markdown
+::: aside "Related information"
+This becomes a native `aside` element.
+:::
+```
+
+Use `details` for content which readers can expand and collapse. Its optional
+title becomes the native `summary`; the default summary is `Details`.
+
+```markdown
+::: details "More details"
+This becomes the body of a native `details` element.
+:::
+```
+
+The opening and closing fences may contain three or more colons. Use a longer
+outer fence when nesting these containers.
 
 ### Column and row headers
 
@@ -221,20 +280,36 @@ root:
 php -S 127.0.0.1:8000 -t examples
 ```
 
-Then compare the five entry points:
+Then compare the sample entry points:
 
 - <http://127.0.0.1:8000/> uses the version 1 compatibility facade.
 - <http://127.0.0.1:8000/index-v2.php> uses the recommended version 2 API.
 - <http://127.0.0.1:8000/index-commonmark.php> uses only League CommonMark's
-  Core, Table, and Attributes extensions as a graceful-degradation baseline.
+  Core, Table, Attributes, Heading Permalink, and Table of Contents extensions
+  as a graceful-degradation baseline.
 - <http://127.0.0.1:8000/index-pico.php> uses the recommended version 2 API
   and applies the locally stored Pico CSS 2.1.1 Classless stylesheet without
   custom table or figure styles.
 - <http://127.0.0.1:8000/index-bootstrap.php> applies locally stored Bootstrap
   5.3.8 CSS and a demo-only AST extension which adds Bootstrap classes to
   tables and figures. It does not define a public Bootstrap integration API.
+- <http://127.0.0.1:8000/cheatsheet-pico.html> renders the English Pico CSS
+  cheat sheet.
+- <http://127.0.0.1:8000/cheatsheet-pico-ja.html> renders the Japanese Pico CSS
+  cheat sheet.
+- <http://127.0.0.1:8000/cheatsheet-bootstrap.html> renders the English
+  Bootstrap cheat sheet.
+- <http://127.0.0.1:8000/cheatsheet-bootstrap-ja.html> renders the Japanese
+  Bootstrap cheat sheet.
 
-All five pages render the same `examples/sample.md`.
+The first five pages render the same `examples/sample.md`. The cheat-sheet
+files are static HTML generated from the corresponding Markdown files in `docs/`.
+
+Regenerate the static cheat sheets after editing their Markdown sources:
+
+```bash
+composer build-cheatsheets
+```
 
 ## Development
 

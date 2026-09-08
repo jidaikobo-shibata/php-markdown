@@ -1,9 +1,41 @@
 # 基本的なMarkdown
 
+[TOC]
+
 これは通常の段落です。**強調**、*斜体*、`インラインコード`を含みます。
 
 - 箇条書きの項目1
 - 箇条書きの項目2
+
+## note、aside、details
+
+::: note info "参考情報"
+これは通常の補足です。[リンク](https://example.com/note)や **強調** を含められます。
+
+- 補足内のリスト
+- 2番目の項目
+:::
+
+::: note warn "注意"
+設定を変更する前に、[現在値の確認手順](https://example.com/check)を確認してください。
+:::
+
+::: note alert "重要な警告"
+この操作は取り消せません。Markdown上の `alert` は表示種別であり、
+ARIAの `role="alert"` には変換しません。[操作上の注意](https://example.com/caution)も参照してください。
+:::
+
+::: aside "関連情報"
+本文から少し外れる関連情報です。HTMLの `aside` 要素になります。
+:::
+
+::: details "詳しい説明"
+この部分は `details` と `summary` になり、開閉できます。
+
+```php
+echo 'details内のコードブロック';
+```
+:::
 
 ## 通常の表
 

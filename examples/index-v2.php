@@ -105,6 +105,47 @@ if ($markdown === false) {
             overflow-x: auto;
             border: 1px solid currentColor;
         }
+
+        .note,
+        aside,
+        details {
+            margin-block: 1.5rem;
+            padding: 1rem;
+            border: 1px solid currentColor;
+            border-inline-start-width: 0.4rem;
+        }
+
+        .note-info {
+            border-inline-start-color: #0969da;
+        }
+
+        .note-warn {
+            border-inline-start-color: #9a6700;
+        }
+
+        .note-alert {
+            border-inline-start-color: #cf222e;
+        }
+
+        .note-label,
+        .aside-label {
+            margin-block-start: 0;
+            font-weight: 700;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .note-info {
+                border-inline-start-color: #58a6ff;
+            }
+
+            .note-warn {
+                border-inline-start-color: #d29922;
+            }
+
+            .note-alert {
+                border-inline-start-color: #ff7b72;
+            }
+        }
     </style>
 </head>
 <body>

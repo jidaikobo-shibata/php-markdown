@@ -53,6 +53,8 @@ if ($markdown === false) {
             <strong aria-current="page">Pico CSS Classless</strong>
             <span aria-hidden="true"> / </span>
             <a href="index-bootstrap.php">Bootstrap 5</a>
+            <span aria-hidden="true"> / </span>
+            <a href="cheatsheet-pico-ja.html">チートシート</a>
         </nav>
         <p>
             バージョン2新APIの変換結果に、ローカル配置した

@@ -1,0 +1,34 @@
+.heading-permalink {
+    margin-inline-start: 0.35em;
+    opacity: 0.65;
+    text-decoration: none;
+}
+
+.table-of-contents {
+    padding-block: 1rem;
+    border-block: 1px solid currentColor;
+}
+
+.bg-body-tertiary pre {
+    padding: 1rem;
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-tertiary-bg);
+    font-family: var(--bs-font-monospace);
+}
+
+.bg-body-tertiary pre code {
+    font-family: inherit;
+}
+
+.note > :last-child {
+    margin-block-end: 0;
+}
+
+pre {
+    overflow-x: auto;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}

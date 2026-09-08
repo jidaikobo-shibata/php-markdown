@@ -27,7 +27,11 @@
         "phpcompatibility/php-compatibility": "^9.3"
     },
     "scripts": {
-        "test": "php tests/regression.php",
+        "test": [
+            "php scripts/build-cheatsheets.php --check",
+            "php tests/regression.php"
+        ],
+        "build-cheatsheets": "php scripts/build-cheatsheets.php",
         "phpstan": [
             "vendor/bin/phpstan analyse src/ --level=5"
         ],

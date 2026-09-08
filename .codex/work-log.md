@@ -350,3 +350,81 @@
 - 未完了: 公開APIとしてレンダリングプロファイルを提供するかどうかの判断。
 - 次にやるとよいこと: Pico版とBootstrap版を見比べ、公開APIとしてレンダリング
   プロファイルを持つ価値があるか判断する。
+
+### note・aside・detailsコンテナー
+
+- `:::`フェンス内を通常のCommonMark ASTとして解析する、機能単位の
+  `ContainerExtension`を追加した。
+- `note`は`info`・`warn`・`alert`の固定表示種別に対応し、いずれも静的文書の
+  `div[role="note"]`として出力する。タイトル指定時は見えるラベルと
+  `aria-labelledby`を生成し、`alert`種別をARIA live regionにはしない。
+- `aside`はネイティブの`aside`、`details`は`summary`を持つネイティブの
+  `details`として出力し、内部の段落・リスト・リンク・コードブロックを維持する。
+- サンプル、README、CHANGELOG、回帰テストを新記法に合わせて更新し、通常版には
+  ラベルと太い開始罫線を併用するCSS、Bootstrap版には既存alert classとの対応を追加した。
+- 理由: 視覚的な枠だけでなく、補足・傍系情報・開閉情報という意味をHTMLと
+  支援技術へ伝えつつ、League CommonMarkのAST構造を壊さないため。
+- 回帰テスト、PHPStan level 5、PSR-12、PHP 7.4互換検査、Composer strict validate・
+  audit、`git diff --check`が成功した。5つのサンプルページはすべてHTTP 200で、
+  新しいnote・aside・details構造と標準Extensionでの記法残存を確認した。
+- 未完了: 利用者によるブラウザー目視と、スクリーンリーダーでのラベル読み上げ確認。
+- 次にやるとよいこと: detailsのキーボード操作と各表示プロファイルの外観を確認し、
+  noteラベルが環境によって不自然に重複して読まれないか実機で確認する。
+
+### 英日Markdownチートシートと文書内ナビゲーション
+
+- `docs/cheatsheet.md`と`docs/cheatsheet-ja.md`を追加し、基本Markdown、League標準
+  Extension、Jidaikobo独自拡張について、記法のコード例と実際に変換される例を併記した。
+- League公式の`HeadingPermalinkExtension`を全見出しで有効にし、
+  `TableOfContentsExtension`は`[TOC]`プレースホルダーを書いた位置だけに目次を生成する
+  構成にした。目次は見出しレベル2〜4、最大100項目に制限した。
+- 理由: 既存文書へ目次を強制挿入せず、必要な文書だけが明示的に文書内ナビゲーションを
+  持てるようにし、過大な目次生成も制限するため。
+- PHPを実行せず閲覧できるPico CSS版とBootstrap版を英日それぞれ生成した。
+  Markdown原稿を正本とし、`scripts/build-cheatsheets.php`とComposerスクリプトで
+  4つの静的HTMLを再生成・更新漏れ検査できる構成にした。
+- League標準Extensionのみの比較ページにもHeading PermalinkとTable of Contentsを追加し、
+  Jidaikobo独自拡張を使わない場合との比較条件を維持した。
+- PHP構文、回帰テスト、PHPStan level 5、PSR-12、PHP 7.4互換検査、Composer strict
+  validate、`git diff --check`が成功した。既存5ページと4つの静的チートシート、画像は
+  HTTP 200で、日本語slug、目次、note・details、ファイル容量の出力を確認した。
+- 未完了: 利用者による英日チートシートの内容とブラウザー表示の目視確認。
+- 次にやるとよいこと: 項目の過不足、用語、見出しパーマリンクの外観を確認し、必要なら
+  正式リリース前に文言と目次範囲を調整する。
+
+### チートシートの文言と表示責任の整理
+
+- 英日原稿から、運用側で扱う生HTMLとサニタイズの説明を削除した。
+- 独自拡張の見出しを、提供元が明確な `jidaikobo/php-markdown` 表記へ変更した。
+- 共通チートシートCSSからnote・aside・detailsの枠、色、余白を削除した。
+  noteはclassと意味構造だけをパッケージが提供し、外観は利用側のCSSに委ねることを
+  英日原稿へ明記した。detailsはネイティブの開閉動作を使い、外観はブラウザーや
+  読み込んだCSSに依存することも記載した。
+- 理由: パッケージ本体の意味的なHTML出力と、アプリケーションごとの表示設計を
+  混同しないため。Bootstrap版は表示比較用なのでBootstrap classの付与を維持する。
+- 未完了: 再生成したPico CSS版とBootstrap版の利用者による目視確認。
+- 次にやるとよいこと: Picoによるネイティブdetailsの装飾と、装飾されないnoteの
+  バランスがチートシートとして分かりやすいか確認する。
+
+### Bootstrapチートシートのコード例とnote余白
+
+- Bootstrap版の `pre` に限定して、Bootstrapの変数を使った背景色、padding、角丸、
+  monospaceフォントを指定し、Markdown記法の範囲を視覚的に判別できるようにした。
+- note内の最後の子要素の下マージンをなくし、Bootstrapのpaddingと段落marginが
+  重なって下側だけ広く見える状態を調整した。
+- 理由: Pico版と同様に記法とレンダリング結果を見分けやすくしつつ、note自体の
+  paddingや意味構造は変えないため。
+- 未完了: 更新後のBootstrap版について利用者による目視確認。
+- 次にやるとよいこと: コード例のコントラストと、note上下の余白の釣り合いを確認する。
+
+### Bootstrap note内リンクのコントラスト対応
+
+- Bootstrap表示用Extensionで、note内に入れ子になったリンクへBootstrap標準の
+  `alert-link` classを付与するようにした。パッケージ本体のHTML出力には影響しない。
+- info・warn・alertのサンプルすべてにリンクを置き、3種の背景色で表示とclass付与を
+  検査できるようにした。
+- 理由: 通常のBootstrapリンク色はinfo背景上でWCAG AAの通常文字に必要な4.5:1を
+  下回るため。alert固有の文字色をリンクにも使い、下線と太字を維持する。
+- 未完了: 更新後の3種類のnoteについて利用者による目視確認。
+- 次にやるとよいこと: キーボードフォーカス時を含め、リンクの識別性をブラウザーで
+  確認する。

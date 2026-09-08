@@ -5,7 +5,11 @@ declare(strict_types=1);
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\Attributes\AttributesExtension;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
+use League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension;
+use League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkProcessor;
 use League\CommonMark\Extension\Table\TableExtension;
+use League\CommonMark\Extension\TableOfContents\TableOfContentsBuilder;
+use League\CommonMark\Extension\TableOfContents\TableOfContentsExtension;
 use League\CommonMark\MarkdownConverter;
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -25,11 +29,23 @@ if ($markdown === false) {
         'attributes' => [
             'allow' => ['id', 'class', 'lang', 'title', 'rel'],
         ],
+        'heading_permalink' => [
+            'insert' => HeadingPermalinkProcessor::INSERT_AFTER,
+        ],
+        'table_of_contents' => [
+            'position' => TableOfContentsBuilder::POSITION_PLACEHOLDER,
+            'placeholder' => '[TOC]',
+            'min_heading_level' => 2,
+            'max_heading_level' => 4,
+            'max_placeholder_entries' => 100,
+        ],
     ]);
 
     $environment->addExtension(new CommonMarkCoreExtension());
     $environment->addExtension(new TableExtension());
     $environment->addExtension(new AttributesExtension());
+    $environment->addExtension(new HeadingPermalinkExtension());
+    $environment->addExtension(new TableOfContentsExtension());
 
     $converter = new MarkdownConverter($environment);
     $renderedHtml = $converter->convert($markdown)->getContent();
@@ -127,7 +143,8 @@ if ($markdown === false) {
         <p>
             このページはLeague CommonMark公式の
             <code>CommonMarkCoreExtension</code>、<code>TableExtension</code>、
-            <code>AttributesExtension</code>だけを使います。
+            <code>AttributesExtension</code>、<code>HeadingPermalinkExtension</code>、
+            <code>TableOfContentsExtension</code>だけを使います。
             Jidaikoboの独自Extensionは適用しません。
         </p>
         <p>

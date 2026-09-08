@@ -53,6 +53,7 @@ if ($markdown === false) {
             <a class="btn btn-outline-secondary btn-sm" href="index-commonmark.php">League標準Extensionのみ</a>
             <a class="btn btn-outline-secondary btn-sm" href="index-pico.php">Pico CSS Classless</a>
             <strong class="btn btn-primary btn-sm" aria-current="page">Bootstrap 5</strong>
+            <a class="btn btn-outline-secondary btn-sm" href="cheatsheet-bootstrap-ja.html">チートシート</a>
         </nav>
         <div class="alert alert-info mb-0">
             <p class="mb-1">

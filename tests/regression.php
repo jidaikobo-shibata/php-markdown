@@ -41,6 +41,17 @@ function renderExample(string $path): string
     return $output;
 }
 
+function readRequiredFile(string $path): string
+{
+    $contents = file_get_contents($path);
+    if ($contents === false) {
+        fwrite(STDERR, "FAIL: Unable to read {$path}.\n");
+        exit(1);
+    }
+
+    return $contents;
+}
+
 MarkdownExtra::setTargetUrl('http://127.0.0.1:8000');
 MarkdownExtra::setReplacePath(__DIR__ . '/../examples');
 
@@ -245,12 +256,146 @@ assertNotContains(
     'File metadata must not leak between converter instances.'
 );
 
+$navigationHtml = $isolatedConverter->convert(
+    "# Document title\n\n[TOC]\n\n## First section\n\n### Child section\n"
+);
+assertContains(
+    '<ul class="table-of-contents">',
+    $navigationHtml,
+    'The TOC placeholder should render a table of contents.'
+);
+assertContains(
+    '<a href="#content-first-section">First section</a>',
+    $navigationHtml,
+    'Table-of-contents links should target generated heading fragments.'
+);
+assertContains(
+    '<h2>First section<a id="content-first-section" href="#content-first-section" ' .
+    'class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h2>',
+    $navigationHtml,
+    'Headings should receive an accessible, non-tabbable permalink marker.'
+);
+assertNotContains('[TOC]', $navigationHtml, 'A replaced TOC placeholder must not remain in the output.');
+
+$withoutTocHtml = $isolatedConverter->convert("## A heading without a placeholder\n");
+assertNotContains(
+    'class="table-of-contents"',
+    $withoutTocHtml,
+    'A document without a TOC placeholder must not receive an automatic TOC.'
+);
+
 $instanceFacade = new MarkdownExtra();
 $instanceHtml = $instanceFacade->transform("**Instance facade**\n");
 assertContains(
     '<strong>Instance facade</strong>',
     $instanceHtml,
     'The version 1 instance transform API should remain available.'
+);
+
+$containers = <<<'MARKDOWN'
+::: note info "Reference information"
+A [link](https://example.com/note) and **strong text**.
+:::
+
+::: note warn "Caution"
+Check the current value.
+:::
+
+::: note alert "Important warning"
+This is static document content.
+:::
+
+::: aside "Related information"
+- An item
+- Another item
+:::
+
+::: details "More details"
+```text
+:::
+```
+The fence-like text in code must not close the container.
+:::
+
+::: note
+The default variant is info.
+:::
+
+::: details
+The default summary is Details.
+:::
+MARKDOWN;
+
+$containerHtml = MarkdownExtra::defaultTransform($containers);
+assertContains(
+    '<div class="note note-info" role="note" aria-labelledby="jidaikobo-note-1-label">',
+    $containerHtml,
+    'An info note should use the note role and an accessible name.'
+);
+assertContains(
+    '<p id="jidaikobo-note-1-label" class="note-label">Reference information</p>',
+    $containerHtml,
+    'A note title should remain visible and label the note.'
+);
+assertContains(
+    '<a href="https://example.com/note">link</a> and <strong>strong text</strong>',
+    $containerHtml,
+    'Markdown inside a note should be parsed normally.'
+);
+assertContains(
+    '<div class="note note-warn" role="note"',
+    $containerHtml,
+    'Warn notes should use a fixed class.'
+);
+assertContains(
+    '<div class="note note-alert" role="note"',
+    $containerHtml,
+    'Alert notes should use a fixed class.'
+);
+assertNotContains('role="alert"', $containerHtml, 'A static alert variant must not become an ARIA alert.');
+assertContains(
+    '<aside class="aside" aria-labelledby=',
+    $containerHtml,
+    'Aside syntax should render a native aside with an accessible name.'
+);
+assertContains('<ul>', $containerHtml, 'Block Markdown inside an aside should remain structured.');
+assertContains('<details class="details">', $containerHtml, 'Details syntax should render a native details element.');
+assertContains('<summary>More details</summary>', $containerHtml, 'Details should have a summary.');
+assertContains(
+    "<pre><code class=\"language-text\">:::\n</code></pre>",
+    $containerHtml,
+    'Container fences in code must remain code.'
+);
+assertContains(
+    '<p>The fence-like text in code must not close the container.</p>',
+    $containerHtml,
+    'Content after fenced code should remain inside details.'
+);
+assertContains(
+    '<div class="note note-info" role="note">',
+    $containerHtml,
+    'A note without arguments should use the info variant without inventing a label.'
+);
+assertContains(
+    '<summary>Details</summary>',
+    $containerHtml,
+    'Details without a title should use a usable default summary.'
+);
+
+$nestedContainers = <<<'MARKDOWN'
+:::: aside "Outer container"
+::: note info "Inner note"
+Nested content.
+:::
+::::
+MARKDOWN;
+
+$nestedContainerHtml = MarkdownExtra::defaultTransform($nestedContainers);
+assertContains('<aside class="aside"', $nestedContainerHtml, 'A longer outer fence should support nesting.');
+assertContains(
+    '<div class="note note-info" role="note"',
+    $nestedContainerHtml,
+    'A shorter inner fence should remain nested in the outer container.'
 );
 
 $defaults = MarkdownOptions::defaults();
@@ -266,6 +411,10 @@ $versionTwoExample = renderExample(__DIR__ . '/../examples/index-v2.php');
 $commonMarkExample = renderExample(__DIR__ . '/../examples/index-commonmark.php');
 $picoExample = renderExample(__DIR__ . '/../examples/index-pico.php');
 $bootstrapExample = renderExample(__DIR__ . '/../examples/index-bootstrap.php');
+$englishPicoCheatSheet = readRequiredFile(__DIR__ . '/../examples/cheatsheet-pico.html');
+$japanesePicoCheatSheet = readRequiredFile(__DIR__ . '/../examples/cheatsheet-pico-ja.html');
+$englishBootstrapCheatSheet = readRequiredFile(__DIR__ . '/../examples/cheatsheet-bootstrap.html');
+$japaneseBootstrapCheatSheet = readRequiredFile(__DIR__ . '/../examples/cheatsheet-bootstrap-ja.html');
 assertContains(
     'Jidaikobo MarkdownExtra 互換API表示確認',
     $compatibilityExample,
@@ -278,6 +427,16 @@ assertContains(
 );
 assertContains('<figure>', $compatibilityExample, 'The compatibility example should render custom syntax.');
 assertContains('<figure>', $versionTwoExample, 'The version 2 example should render custom syntax.');
+assertContains(
+    '<div class="note note-info" role="note"',
+    $compatibilityExample,
+    'The compatibility example should render note containers.'
+);
+assertContains(
+    '<div class="note note-info" role="note"',
+    $versionTwoExample,
+    'The version 2 example should render note containers.'
+);
 assertContains(
     '<p><em>この強調文はcaptionではありません</em></p>',
     $compatibilityExample,
@@ -334,6 +493,83 @@ assertContains(
     $bootstrapExample,
     'The Bootstrap example should add a figcaption class through the AST.'
 );
+assertContains(
+    'class="note note-warn alert alert-warning" role="note"',
+    $bootstrapExample,
+    'The Bootstrap example should map warn notes to Bootstrap alert classes.'
+);
+assertContains(
+    '<a class="alert-link" href="https://example.com/note">リンク</a>',
+    $bootstrapExample,
+    'The Bootstrap example should style links in info notes with the alert palette.'
+);
+assertContains(
+    '<a class="alert-link" href="https://example.com/check">現在値の確認手順</a>',
+    $bootstrapExample,
+    'The Bootstrap example should style links in warn notes with the alert palette.'
+);
+assertContains(
+    '<a class="alert-link" href="https://example.com/caution">操作上の注意</a>',
+    $bootstrapExample,
+    'The Bootstrap example should style links in alert notes with the alert palette.'
+);
+assertContains(
+    '<details class="details border rounded p-3 my-4">',
+    $bootstrapExample,
+    'The Bootstrap example should style details through the AST.'
+);
+assertContains(
+    '<ul class="table-of-contents">',
+    $compatibilityExample,
+    'The compatibility example should render the sample TOC placeholder.'
+);
+assertContains(
+    'class="heading-permalink"',
+    $versionTwoExample,
+    'The version 2 example should render heading permalinks.'
+);
+assertContains(
+    '<html lang="en">',
+    $englishPicoCheatSheet,
+    'The English Pico cheat sheet should declare its language.'
+);
+assertContains('Markdown Cheat Sheet', $englishPicoCheatSheet, 'The English Pico cheat sheet should render.');
+assertContains(
+    'Small text download (txt, 100 B)',
+    $englishPicoCheatSheet,
+    'The English Pico cheat sheet should contain rendered local file metadata.'
+);
+assertContains(
+    'assets/vendor/pico/pico.classless.min.css',
+    $japanesePicoCheatSheet,
+    'The Japanese Pico cheat sheet should use the local Pico stylesheet.'
+);
+assertNotContains(
+    'class="alert-link"',
+    $japanesePicoCheatSheet,
+    'Bootstrap presentation classes must not leak into the Pico cheat sheet.'
+);
+assertContains(
+    '<html lang="ja">',
+    $japaneseBootstrapCheatSheet,
+    'The Japanese Bootstrap cheat sheet should declare its language.'
+);
+assertContains(
+    'assets/vendor/bootstrap/bootstrap.min.css',
+    $englishBootstrapCheatSheet,
+    'The English Bootstrap cheat sheet should use the local Bootstrap stylesheet.'
+);
+assertContains(
+    'Markdownチートシート',
+    $japaneseBootstrapCheatSheet,
+    'The Japanese Bootstrap cheat sheet should render.'
+);
+assertContains(
+    'class="note note-alert alert alert-danger" role="note"',
+    $japaneseBootstrapCheatSheet,
+    'The Japanese Bootstrap cheat sheet should render and style Jidaikobo note syntax.'
+);
+assertNotContains('<?php', $englishPicoCheatSheet, 'Static cheat sheets must not contain PHP source.');
 assertContains(
     '<td>月曜日:</td>',
     $commonMarkExample,

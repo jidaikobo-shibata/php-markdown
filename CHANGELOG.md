@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+- Enable League CommonMark heading permalinks and placeholder-based tables of
+  contents.
+- Add English and Japanese Markdown cheat sheets with source and rendered
+  examples, plus generated static Pico CSS and Bootstrap presentations.
+- Add fenced `note` blocks with `info`, `warn`, and `alert` presentation
+  variants. All use the static-document `note` role and may have a visible,
+  accessible label.
+- Add fenced native `aside` and `details` blocks with nested Markdown support.
+
 ## 2.0.0-beta.1 - 2026-09-08
 
 ### Added

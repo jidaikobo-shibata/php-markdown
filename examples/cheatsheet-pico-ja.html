@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Markdownチートシート — Pico CSS</title>
+    <link rel="stylesheet" href="assets/vendor/pico/pico.classless.min.css">
+    <link rel="stylesheet" href="assets/cheatsheet.css">
+</head>
+<body>
+    <header>
+        <nav aria-label="Cheat sheet style and language">
+            <strong aria-current="page">Pico CSS</strong>
+            <a href="cheatsheet-bootstrap-ja.html">Bootstrap 5</a>
+            <a href="cheatsheet-pico.html" hreflang="en">English</a>
+        </nav>
+    </header>
+    <main>
+<h1>Markdownチートシート<a id="content-markdownチートシート" href="#content-markdownチートシート" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h1>
+<p>この文書では、Markdownの記法と <code>jidaikobo/php-markdown</code> によるレンダリング結果を
+続けて掲載します。同梱のブラウザーサンプルで開くと独自記法も変換されます。
+独自拡張に対応しないリポジトリビューアーでは、意図的に元の文字列が残ります。</p>
+<p><strong>目次</strong></p>
+<ul class="table-of-contents">
+<li><a href="#content-markdownの基本記法">Markdownの基本記法</a>
+<ul>
+<li><a href="#content-段落と改行">段落と改行</a></li>
+<li><a href="#content-見出し">見出し</a>
+<ul>
+<li><a href="#content-レンダリングされたレベル4の見出し">レンダリングされたレベル4の見出し</a></li>
+</ul>
+</li>
+<li><a href="#content-強調">強調</a></li>
+<li><a href="#content-リンクと画像">リンクと画像</a></li>
+<li><a href="#content-箇条書きと番号付きリスト">箇条書きと番号付きリスト</a></li>
+<li><a href="#content-引用">引用</a></li>
+<li><a href="#content-インラインコードとコードブロック">インラインコードとコードブロック</a></li>
+<li><a href="#content-主題区切り">主題区切り</a></li>
+<li><a href="#content-表">表</a></li>
+<li><a href="#content-属性">属性</a></li>
+</ul>
+</li>
+<li><a href="#content-見出しパーマリンクと目次">見出しパーマリンクと目次</a></li>
+<li><a href="#content-jidaikobophp-markdownの独自拡張">jidaikobo/php-markdownの独自拡張</a>
+<ul>
+<li><a href="#content-列見出しと行見出しを持つ表">列見出しと行見出しを持つ表</a></li>
+<li><a href="#content-表のcaption">表のcaption</a></li>
+<li><a href="#content-figureとfigcaption">figureとfigcaption</a></li>
+<li><a href="#content-ルート相対リンクとローカルファイル情報">ルート相対リンクとローカルファイル情報</a></li>
+<li><a href="#content-note">note</a></li>
+<li><a href="#content-aside">aside</a></li>
+<li><a href="#content-detailsによる開閉">detailsによる開閉</a></li>
+<li><a href="#content-コンテナーの入れ子">コンテナーの入れ子</a></li>
+</ul>
+</li>
+<li><a href="#content-アクセシビリティとセキュリティ">アクセシビリティとセキュリティ</a></li>
+</ul>
+<h2>Markdownの基本記法<a id="content-markdownの基本記法" href="#content-markdownの基本記法" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h2>
+<h3>段落と改行<a id="content-段落と改行" href="#content-段落と改行" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<p>Markdown記法：</p>
+<pre><code class="language-markdown">これは一つの段落です。
+
+これは別の段落です。
+この行は同じ段落の続きです。
+
+行末にバックスラッシュを置くと\
+明示的な改行になります。
+</code></pre>
+<p>レンダリング結果：</p>
+<p>これは一つの段落です。</p>
+<p>これは別の段落です。
+この行は同じ段落の続きです。</p>
+<p>行末にバックスラッシュを置くと<br />
+明示的な改行になります。</p>
+<h3>見出し<a id="content-見出し" href="#content-見出し" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<p>Markdown記法：</p>
+<pre><code class="language-markdown"># レベル1の見出し
+## レベル2の見出し
+### レベル3の見出し
+</code></pre>
+<p>レンダリング結果：</p>
+<h4>レンダリングされたレベル4の見出し<a id="content-レンダリングされたレベル4の見出し" href="#content-レンダリングされたレベル4の見出し" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h4>
+<p>このページの題名がレベル1、各節の階層がレベル2と3の例です。すべての見出しに
+パーマリンクが自動的に追加されます。</p>
+<h3>強調<a id="content-強調" href="#content-強調" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<p>Markdown記法：</p>
+<pre><code class="language-markdown">*強調*、**重要性の強調**、***両方を組み合わせた強調***。
+
+~~取り消し線~~は対応するGFM拡張が有効な場合にだけ使えます。
+</code></pre>
+<p>レンダリング結果：</p>
+<p><em>強調</em>、<strong>重要性の強調</strong>、<em><strong>両方を組み合わせた強調</strong></em>。</p>
+<p>取り消し線は現在このパッケージで有効にしていないため、ここでは記法だけを
+示しています。</p>
+<h3>リンクと画像<a id="content-リンクと画像" href="#content-リンクと画像" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<p>Markdown記法：</p>
+<pre><code class="language-markdown">[リンクの例](https://example.com/ &quot;任意のtitle&quot;)
+
+![青い四角](files/sample-image.svg &quot;サンプル画像&quot;)
+</code></pre>
+<p>レンダリング結果：</p>
+<p><a href="https://example.com/" title="任意のtitle">リンクの例</a></p>
+<p><img src="files/sample-image.svg" alt="青い四角" title="サンプル画像" /></p>
+<p>情報を伝える画像には適切な代替テキストを付けます。空の代替テキスト
+<code>![](image.svg)</code> は、本当に装飾目的だけの画像に使用します。</p>
+<h3>箇条書きと番号付きリスト<a id="content-箇条書きと番号付きリスト" href="#content-箇条書きと番号付きリスト" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<p>Markdown記法：</p>
+<pre><code class="language-markdown">- 一つ目の項目
+- 二つ目の項目
+  - 入れ子の項目
+
+1. 最初の手順
+2. 次の手順
+</code></pre>
+<p>レンダリング結果：</p>
+<ul>
+<li>一つ目の項目</li>
+<li>二つ目の項目
+<ul>
+<li>入れ子の項目</li>
+</ul>
+</li>
+</ul>
+<ol>
+<li>最初の手順</li>
+<li>次の手順</li>
+</ol>
+<h3>引用<a id="content-引用" href="#content-引用" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<p>Markdown記法：</p>
+<pre><code class="language-markdown">&gt; 引用の中でも **ほかのMarkdown記法** を使えます。
+&gt;
+&gt; 複数の段落を含められます。
+</code></pre>
+<p>レンダリング結果：</p>
+<blockquote>
+<p>引用の中でも <strong>ほかのMarkdown記法</strong> を使えます。</p>
+<p>複数の段落を含められます。</p>
+</blockquote>
+<p>引用はほかの情報源から引用した内容に使用し、字下げや装飾だけを目的として
+使わないようにします。</p>
+<h3>インラインコードとコードブロック<a id="content-インラインコードとコードブロック" href="#content-インラインコードとコードブロック" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<p>Markdown記法：</p>
+<pre><code class="language-markdown">短いコードには `インラインコード` を使います。
+
+```php
+echo 'フェンス付きコードブロック';
+```
+</code></pre>
+<p>レンダリング結果：</p>
+<p>短いコードには <code>インラインコード</code> を使います。</p>
+<pre><code class="language-php">echo 'フェンス付きコードブロック';
+</code></pre>
+<h3>主題区切り<a id="content-主題区切り" href="#content-主題区切り" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<p>Markdown記法：</p>
+<pre><code class="language-markdown">---
+</code></pre>
+<p>レンダリング結果：</p>
+<hr />
+<h3>表<a id="content-表" href="#content-表" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<p>Markdown記法：</p>
+<pre><code class="language-markdown">| 名前 | 値 |
+| --- | ---: |
+| アルファ | 10 |
+| ベータ | 20 |
+</code></pre>
+<p>レンダリング結果：</p>
+<table>
+<thead>
+<tr>
+<th scope="col">名前</th>
+<th scope="col" align="right">値</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>アルファ</td>
+<td align="right">10</td>
+</tr>
+<tr>
+<td>ベータ</td>
+<td align="right">20</td>
+</tr>
+</tbody>
+</table>
+<h3>属性<a id="content-属性" href="#content-属性" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<p>League CommonMarkのAttributes拡張を有効にしています。このパッケージでは
+<code>id</code>、<code>class</code>、<code>lang</code>、<code>title</code>、<code>rel</code>属性を許可しています。</p>
+<p>Markdown記法：</p>
+<pre><code class="language-markdown">[英語のページ](https://example.com/){.external lang=en rel=noreferrer}
+</code></pre>
+<p>レンダリング結果：</p>
+<p><a class="external" lang="en" rel="noreferrer" href="https://example.com/">英語のページ</a></p>
+<h2>見出しパーマリンクと目次<a id="content-見出しパーマリンクと目次" href="#content-見出しパーマリンクと目次" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h2>
+<p>レベル1から6までの見出しには、パーマリンクが自動生成されます。パーマリンクの
+記号は支援技術から隠してタブ移動の対象外とし、見出しをフラグメントリンクの
+移動先として利用できます。</p>
+<p>次のプレースホルダーを書いた位置にだけ目次を生成します。</p>
+<pre><code class="language-markdown">[TOC]
+</code></pre>
+<p>この文書の冒頭にある目次がレンダリング結果です。目次にはレベル2から4までの
+見出しを掲載し、一文書につき100項目までに制限しています。</p>
+<h2>jidaikobo/php-markdownの独自拡張<a id="content-jidaikobophp-markdownの独自拡張" href="#content-jidaikobophp-markdownの独自拡張" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h2>
+<h3>列見出しと行見出しを持つ表<a id="content-列見出しと行見出しを持つ表" href="#content-列見出しと行見出しを持つ表" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<p>通常の列見出しには <code>scope=&quot;col&quot;</code> が付きます。セル末尾にコロンを付けると
+<code>scope=&quot;row&quot;</code>を持つ行見出しになり、記法のコロンはHTMLから取り除かれます。</p>
+<p>Markdown記法：</p>
+<pre><code class="language-markdown">| 曜日 | 開館 | 閉館 |
+| --- | --- | --- |
+| 月曜日: | 09:00 | 17:00 |
+| 火曜日: | 10:00 | 18:00 |
+</code></pre>
+<p>レンダリング結果：</p>
+<table>
+<thead>
+<tr>
+<th scope="col">曜日</th>
+<th scope="col">開館</th>
+<th scope="col">閉館</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">月曜日</th>
+<td>09:00</td>
+<td>17:00</td>
+</tr>
+<tr>
+<th scope="row">火曜日</th>
+<td>10:00</td>
+<td>18:00</td>
+</tr>
+</tbody>
+</table>
+<h3>表のcaption<a id="content-表のcaption" href="#content-表のcaption" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<p>表の直前に空行を挟まず、強調だけの段落を置きます。caption内のリンクやコードも
+構造を維持します。</p>
+<p>Markdown記法：</p>
+<pre><code class="language-markdown">*2026年の地域別人口*
+| 地域 | 人口 |
+| --- | ---: |
+| 東 | 12 |
+| 西 | 8 |
+</code></pre>
+<p>レンダリング結果：</p>
+<table>
+<caption>2026年の地域別人口</caption>
+<thead>
+<tr>
+<th scope="col">地域</th>
+<th scope="col" align="right">人口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>東</td>
+<td align="right">12</td>
+</tr>
+<tr>
+<td>西</td>
+<td align="right">8</td>
+</tr>
+</tbody>
+</table>
+<p>バージョン1のcaption行記法も互換性のため利用できます。</p>
+<pre><code class="language-markdown">| 名前 | 値 |
+| --- | --- |
+| アルファ | 10 |
+|: 従来形式のcaption
+</code></pre>
+<h3>figureとfigcaption<a id="content-figureとfigcaption" href="#content-figureとfigcaption" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<p>画像の直後に強調行を置くと <code>figure</code> と <code>figcaption</code> になります。caption内では
+インラインMarkdownを使えます。</p>
+<p>Markdown記法：</p>
+<pre><code class="language-markdown">![青い四角](files/sample-image.svg &quot;サンプル画像&quot;)
+*[詳しい説明](https://example.com/details)、**重要性**、`コード`を含むcaption*
+</code></pre>
+<p>レンダリング結果：</p>
+<figure>
+<img src="files/sample-image.svg" alt="青い四角" title="サンプル画像" />
+<figcaption><a href="https://example.com/details">詳しい説明</a>、<strong>重要性</strong>、<code>コード</code>を含むcaption</figcaption>
+</figure>
+<h3>ルート相対リンクとローカルファイル情報<a id="content-ルート相対リンクとローカルファイル情報" href="#content-ルート相対リンクとローカルファイル情報" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<p>Converterに基準URLが設定されている場合、一つの <code>/</code> から始まるリンクを補完します。
+さらに設定されたドキュメントルートの配下へ安全に解決できる非画像ファイルには、
+ファイル形式と容量を追記します。</p>
+<p>Markdown記法：</p>
+<pre><code class="language-markdown">[小さなテキストファイル](/files/download.txt)
+</code></pre>
+<p>同梱ブラウザーサンプルでのレンダリング結果：</p>
+<p><a href="http://127.0.0.1:8000/files/download.txt">小さなテキストファイル (txt, 100 B)</a></p>
+<h3>note<a id="content-note" href="#content-note" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<p>noteは <code>div[role=&quot;note&quot;]</code> になります。<code>info</code>、<code>warn</code>、<code>alert</code>は見た目の種別であり、
+静的な <code>alert</code> 種別もARIAの <code>role=&quot;alert&quot;</code> にはなりません。
+パッケージは安定したclass名を出力しますが、note用のCSSは提供しません。視覚的な
+区別が必要な場合は、利用するアプリケーションに適したCSSを用意してください。</p>
+<p>Markdown記法：</p>
+<pre><code class="language-markdown">::: note info &quot;参考情報&quot;
+[リンク](https://example.com/)や **構造化されたMarkdown** を含められます。
+:::
+
+::: note warn &quot;注意&quot;
+[現在値の確認手順](https://example.com/check)を読んでから変更してください。
+:::
+
+::: note alert &quot;重要な警告&quot;
+この操作は取り消せません。[操作上の注意](https://example.com/caution)も確認してください。
+:::
+</code></pre>
+<p>レンダリング結果：</p>
+<div class="note note-info" role="note" aria-labelledby="jidaikobo-note-324-label">
+<p id="jidaikobo-note-324-label" class="note-label">参考情報</p>
+<p><a href="https://example.com/">リンク</a>や <strong>構造化されたMarkdown</strong> を含められます。</p>
+</div>
+<div class="note note-warn" role="note" aria-labelledby="jidaikobo-note-328-label">
+<p id="jidaikobo-note-328-label" class="note-label">注意</p>
+<p><a href="https://example.com/check">現在値の確認手順</a>を読んでから変更してください。</p>
+</div>
+<div class="note note-alert" role="note" aria-labelledby="jidaikobo-note-332-label">
+<p id="jidaikobo-note-332-label" class="note-label">重要な警告</p>
+<p>この操作は取り消せません。<a href="https://example.com/caution">操作上の注意</a>も確認してください。</p>
+</div>
+<h3>aside<a id="content-aside" href="#content-aside" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<p>周囲の本文に対して傍系となる内容に使用します。</p>
+<p>Markdown記法：</p>
+<pre><code class="language-markdown">::: aside &quot;関連情報&quot;
+これはネイティブの `aside` 要素になります。
+:::
+</code></pre>
+<p>レンダリング結果：</p>
+<aside class="aside" aria-labelledby="jidaikobo-aside-350-label">
+<p id="jidaikobo-aside-350-label" class="aside-label">関連情報</p>
+<p>これはネイティブの <code>aside</code> 要素になります。</p>
+</aside>
+<h3>detailsによる開閉<a id="content-detailsによる開閉" href="#content-detailsによる開閉" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<p>タイトルはネイティブの <code>summary</code> になり、本文では構造化されたMarkdownを
+使えます。タイトルを省略した場合は <code>Details</code> が既定値になります。開閉動作は
+ブラウザーが提供し、外観はブラウザーやアプリケーション側のCSSによって変わります。</p>
+<p>Markdown記法：</p>
+<pre><code class="language-markdown">::: details &quot;説明を表示&quot;
+- 詳細の一つ目
+- 詳細の二つ目
+:::
+</code></pre>
+<p>レンダリング結果：</p>
+<details class="details">
+<summary>説明を表示</summary>
+<ul>
+<li>詳細の一つ目</li>
+<li>詳細の二つ目</li>
+</ul>
+</details>
+<h3>コンテナーの入れ子<a id="content-コンテナーの入れ子" href="#content-コンテナーの入れ子" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<p>外側のフェンスを長くします。</p>
+<pre><code class="language-markdown">:::: aside &quot;外側のコンテナー&quot;
+::: note info &quot;内側のnote&quot;
+入れ子になった内容です。
+:::
+::::
+</code></pre>
+<h2>アクセシビリティとセキュリティ<a id="content-アクセシビリティとセキュリティ" href="#content-アクセシビリティとセキュリティ" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h2>
+<ul>
+<li>noteの種別を色だけで区別せず、意味の分かる表示ラベルを付けます。</li>
+<li><code>aside</code>は傍系の内容に使い、<code>details</code>は重要な情報の発見を妨げない場合に使います。</li>
+<li>リンクテキストだけを読んでも、移動先が分かるようにします。</li>
+<li>表のcaptionは表全体を説明し、行見出しは行方向の値を識別します。</li>
+</ul>
+    </main>
+</body>
+</html>
