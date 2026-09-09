@@ -16,7 +16,7 @@
         </nav>
     </header>
     <main class="container bg-body rounded shadow-sm p-3 p-md-5 mb-4">
-<h1>Markdown Cheat Sheet<a id="content-markdown-cheat-sheet" href="#content-markdown-cheat-sheet" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h1>
+<h1 id="content-markdown-cheat-sheet">Markdown Cheat Sheet<a aria-label="Markdown Cheat Sheet" href="#content-markdown-cheat-sheet" class="heading-permalink" title="Permalink">¶</a></h1>
 <p>This sheet places Markdown source next to the result rendered by
 <code>jidaikobo/php-markdown</code>. Open the bundled browser example to see all custom
 syntax transformed; repository viewers which do not support these extensions
@@ -56,8 +56,8 @@ will intentionally show the original text.</p>
 </li>
 <li><a href="#content-accessibility-and-security-notes">Accessibility and Security Notes</a></li>
 </ul>
-<h2>Basic Markdown<a id="content-basic-markdown" href="#content-basic-markdown" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h2>
-<h3>Paragraphs and line breaks<a id="content-paragraphs-and-line-breaks" href="#content-paragraphs-and-line-breaks" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<h2 id="content-basic-markdown">Basic Markdown<a aria-label="Basic Markdown" href="#content-basic-markdown" class="heading-permalink" title="Permalink">¶</a></h2>
+<h3 id="content-paragraphs-and-line-breaks">Paragraphs and line breaks<a aria-label="Paragraphs and line breaks" href="#content-paragraphs-and-line-breaks" class="heading-permalink" title="Permalink">¶</a></h3>
 <p>Markdown source:</p>
 <pre><code class="language-markdown">This is one paragraph.
 
@@ -73,17 +73,17 @@ to create a hard line break.
 This line remains in the same paragraph.</p>
 <p>Add a backslash at the end of a line<br />
 to create a hard line break.</p>
-<h3>Headings<a id="content-headings" href="#content-headings" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<h3 id="content-headings">Headings<a aria-label="Headings" href="#content-headings" class="heading-permalink" title="Permalink">¶</a></h3>
 <p>Markdown source:</p>
 <pre><code class="language-markdown"># Level 1 heading
 ## Level 2 heading
 ### Level 3 heading
 </code></pre>
 <p>Rendered result:</p>
-<h4>Rendered level 4 heading<a id="content-rendered-level-4-heading" href="#content-rendered-level-4-heading" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h4>
+<h4 id="content-rendered-level-4-heading">Rendered level 4 heading<a aria-label="Rendered level 4 heading" href="#content-rendered-level-4-heading" class="heading-permalink" title="Permalink">¶</a></h4>
 <p>The page title above demonstrates level 1, and the section hierarchy
 demonstrates levels 2 and 3. Heading permalink links are added automatically.</p>
-<h3>Emphasis<a id="content-emphasis" href="#content-emphasis" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<h3 id="content-emphasis">Emphasis<a aria-label="Emphasis" href="#content-emphasis" class="heading-permalink" title="Permalink">¶</a></h3>
 <p>Markdown source:</p>
 <pre><code class="language-markdown">*Emphasis*, **strong importance**, and ***both***.
 
@@ -93,7 +93,7 @@ Use ~~strikethrough~~ only when a GFM extension providing it is enabled.
 <p><em>Emphasis</em>, <strong>strong importance</strong>, and <em><strong>both</strong></em>.</p>
 <p>Strikethrough is shown as source here because it is not currently enabled by
 this package.</p>
-<h3>Links and images<a id="content-links-and-images" href="#content-links-and-images" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<h3 id="content-links-and-images">Links and images<a aria-label="Links and images" href="#content-links-and-images" class="heading-permalink" title="Permalink">¶</a></h3>
 <p>Markdown source:</p>
 <pre><code class="language-markdown">[Example link](https://example.com/ &quot;Optional title&quot;)
 
@@ -104,7 +104,7 @@ this package.</p>
 <p><img src="files/sample-image.svg" alt="A blue square" title="Sample image" /></p>
 <p>Use meaningful alternative text for informative images. Use empty alternative
 text, <code>![](image.svg)</code>, only for genuinely decorative images.</p>
-<h3>Unordered and ordered lists<a id="content-unordered-and-ordered-lists" href="#content-unordered-and-ordered-lists" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<h3 id="content-unordered-and-ordered-lists">Unordered and ordered lists<a aria-label="Unordered and ordered lists" href="#content-unordered-and-ordered-lists" class="heading-permalink" title="Permalink">¶</a></h3>
 <p>Markdown source:</p>
 <pre><code class="language-markdown">- First item
 - Second item
@@ -126,7 +126,7 @@ text, <code>![](image.svg)</code>, only for genuinely decorative images.</p>
 <li>First step</li>
 <li>Second step</li>
 </ol>
-<h3>Block quotations<a id="content-block-quotations" href="#content-block-quotations" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<h3 id="content-block-quotations">Block quotations<a aria-label="Block quotations" href="#content-block-quotations" class="heading-permalink" title="Permalink">¶</a></h3>
 <p>Markdown source:</p>
 <pre><code class="language-markdown">&gt; Quoted text can contain **other Markdown**.
 &gt;
@@ -139,7 +139,7 @@ text, <code>![](image.svg)</code>, only for genuinely decorative images.</p>
 </blockquote>
 <p>Use quotations for content quoted from another source, not merely to indent or
 decorate text.</p>
-<h3>Inline code and code blocks<a id="content-inline-code-and-code-blocks" href="#content-inline-code-and-code-blocks" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<h3 id="content-inline-code-and-code-blocks">Inline code and code blocks<a aria-label="Inline code and code blocks" href="#content-inline-code-and-code-blocks" class="heading-permalink" title="Permalink">¶</a></h3>
 <p>Markdown source:</p>
 <pre><code class="language-markdown">Use `inline code` for a short fragment.
 
@@ -151,13 +151,13 @@ echo 'A fenced code block';
 <p>Use <code>inline code</code> for a short fragment.</p>
 <pre><code class="language-php">echo 'A fenced code block';
 </code></pre>
-<h3>Thematic breaks<a id="content-thematic-breaks" href="#content-thematic-breaks" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<h3 id="content-thematic-breaks">Thematic breaks<a aria-label="Thematic breaks" href="#content-thematic-breaks" class="heading-permalink" title="Permalink">¶</a></h3>
 <p>Markdown source:</p>
 <pre><code class="language-markdown">---
 </code></pre>
 <p>Rendered result:</p>
 <hr />
-<h3>Tables<a id="content-tables" href="#content-tables" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<h3 id="content-tables">Tables<a aria-label="Tables" href="#content-tables" class="heading-permalink" title="Permalink">¶</a></h3>
 <p>Markdown source:</p>
 <pre><code class="language-markdown">| Name | Value |
 | --- | ---: |
@@ -183,7 +183,7 @@ echo 'A fenced code block';
 </tr>
 </tbody>
 </table>
-<h3>Attributes<a id="content-attributes" href="#content-attributes" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<h3 id="content-attributes">Attributes<a aria-label="Attributes" href="#content-attributes" class="heading-permalink" title="Permalink">¶</a></h3>
 <p>League CommonMark's Attributes extension is enabled. The package allows <code>id</code>,
 <code>class</code>, <code>lang</code>, <code>title</code>, and <code>rel</code> attributes.</p>
 <p>Markdown source:</p>
@@ -191,17 +191,17 @@ echo 'A fenced code block';
 </code></pre>
 <p>Rendered result:</p>
 <p><a class="external" lang="ja" rel="noreferrer" href="https://example.com/">Japanese page</a></p>
-<h2>Heading Permalinks and Table of Contents<a id="content-heading-permalinks-and-table-of-contents" href="#content-heading-permalinks-and-table-of-contents" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h2>
-<p>Heading permalinks are generated automatically for levels 1 through 6. The
-permalink symbol is hidden from assistive technology and removed from the tab
-order, while each heading remains a valid fragment destination.</p>
+<h2 id="content-heading-permalinks-and-table-of-contents">Heading Permalinks and Table of Contents<a aria-label="Heading Permalinks and Table of Contents" href="#content-heading-permalinks-and-table-of-contents" class="heading-permalink" title="Permalink">¶</a></h2>
+<p>Heading permalinks are generated automatically for levels 1 through 6. Each
+symbol is a keyboard-focusable link whose accessible name is the corresponding
+heading text, while each heading remains a valid fragment destination.</p>
 <p>A table of contents is generated only where this placeholder occurs:</p>
 <pre><code class="language-markdown">[TOC]
 </code></pre>
 <p>The table of contents near the top of this document is the rendered result. It
 includes heading levels 2 through 4 and is limited to 100 entries per document.</p>
-<h2>jidaikobo/php-markdown Extensions<a id="content-jidaikobophp-markdown-extensions" href="#content-jidaikobophp-markdown-extensions" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h2>
-<h3>Accessible column and row headers<a id="content-accessible-column-and-row-headers" href="#content-accessible-column-and-row-headers" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<h2 id="content-jidaikobophp-markdown-extensions">jidaikobo/php-markdown Extensions<a aria-label="jidaikobo/php-markdown Extensions" href="#content-jidaikobophp-markdown-extensions" class="heading-permalink" title="Permalink">¶</a></h2>
+<h3 id="content-accessible-column-and-row-headers">Accessible column and row headers<a aria-label="Accessible column and row headers" href="#content-accessible-column-and-row-headers" class="heading-permalink" title="Permalink">¶</a></h3>
 <p>Normal table headings receive <code>scope=&quot;col&quot;</code>. Add a trailing colon to a cell to
 make it a row heading with <code>scope=&quot;row&quot;</code>; the marker is removed from the HTML.</p>
 <p>Markdown source:</p>
@@ -232,7 +232,7 @@ make it a row heading with <code>scope=&quot;row&quot;</code>; the marker is rem
 </tr>
 </tbody>
 </table>
-<h3>Table captions<a id="content-table-captions" href="#content-table-captions" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<h3 id="content-table-captions">Table captions<a aria-label="Table captions" href="#content-table-captions" class="heading-permalink" title="Permalink">¶</a></h3>
 <p>Place one emphasized paragraph immediately before a table, without a blank
 line. Inline links and code remain structured inside the caption.</p>
 <p>Markdown source:</p>
@@ -268,7 +268,7 @@ line. Inline links and code remain structured inside the caption.</p>
 | Alpha | 10 |
 |: Legacy caption
 </code></pre>
-<h3>Figures and figure captions<a id="content-figures-and-figure-captions" href="#content-figures-and-figure-captions" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<h3 id="content-figures-and-figure-captions">Figures and figure captions<a aria-label="Figures and figure captions" href="#content-figures-and-figure-captions" class="heading-permalink" title="Permalink">¶</a></h3>
 <p>An image immediately followed by an emphasized line becomes <code>figure</code> and
 <code>figcaption</code>. The caption supports inline Markdown.</p>
 <p>Markdown source:</p>
@@ -280,16 +280,17 @@ line. Inline links and code remain structured inside the caption.</p>
 <img class="figure-img img-fluid rounded" src="files/sample-image.svg" alt="A blue square" title="Sample image" />
 <figcaption class="figure-caption">A caption with a <a href="https://example.com/details">link</a>, <strong>importance</strong>, and <code>code</code></figcaption>
 </figure>
-<h3>Root-relative links and local file metadata<a id="content-root-relative-links-and-local-file-metadata" href="#content-root-relative-links-and-local-file-metadata" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<h3 id="content-root-relative-links-and-local-file-metadata">Root-relative links and local file metadata<a aria-label="Root-relative links and local file metadata" href="#content-root-relative-links-and-local-file-metadata" class="heading-permalink" title="Permalink">¶</a></h3>
 <p>When the converter has a base URL, a destination beginning with one <code>/</code> is
 completed from that URL. When it also resolves safely below the configured
-document root, non-image file links receive their type and size.</p>
+document root, non-image files with an extension receive their type and size.
+Extensionless files remain ordinary links.</p>
 <p>Markdown source:</p>
 <pre><code class="language-markdown">[Small text download](/files/download.txt)
 </code></pre>
 <p>Rendered result in the bundled browser example:</p>
 <p><a href="http://127.0.0.1:8000/files/download.txt">Small text download (txt, 100 B)</a></p>
-<h3>Notes<a id="content-notes" href="#content-notes" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<h3 id="content-notes">Notes<a aria-label="Notes" href="#content-notes" class="heading-permalink" title="Permalink">¶</a></h3>
 <p>Notes render as <code>div[role=&quot;note&quot;]</code>. <code>info</code>, <code>warn</code>, and <code>alert</code> are presentation
 variants; even the static <code>alert</code> variant does not become <code>role=&quot;alert&quot;</code>.
 The package outputs stable classes but does not provide CSS for notes. Add
@@ -308,19 +309,19 @@ This operation cannot be undone. Read the [safety notice](https://example.com/ca
 :::
 </code></pre>
 <p>Rendered result:</p>
-<div class="note note-info alert alert-info" role="note" aria-labelledby="jidaikobo-note-325-label">
-<p id="jidaikobo-note-325-label" class="note-label">Information</p>
+<div class="note note-info alert alert-info" role="note" aria-label="Information">
+<p class="note-label">Information</p>
 <p>This note contains a <a class="alert-link" href="https://example.com/">link</a> and <strong>structured Markdown</strong>.</p>
 </div>
-<div class="note note-warn alert alert-warning" role="note" aria-labelledby="jidaikobo-note-329-label">
-<p id="jidaikobo-note-329-label" class="note-label">Caution</p>
+<div class="note note-warn alert alert-warning" role="note" aria-label="Caution">
+<p class="note-label">Caution</p>
 <p>Read the <a class="alert-link" href="https://example.com/check">checking procedure</a> before changing it.</p>
 </div>
-<div class="note note-alert alert alert-danger" role="note" aria-labelledby="jidaikobo-note-333-label">
-<p id="jidaikobo-note-333-label" class="note-label">Important warning</p>
+<div class="note note-alert alert alert-danger" role="note" aria-label="Important warning">
+<p class="note-label">Important warning</p>
 <p>This operation cannot be undone. Read the <a class="alert-link" href="https://example.com/caution">safety notice</a>.</p>
 </div>
-<h3>Asides<a id="content-asides" href="#content-asides" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<h3 id="content-asides">Asides<a aria-label="Asides" href="#content-asides" class="heading-permalink" title="Permalink">¶</a></h3>
 <p>Use an aside for content which is tangentially related to its surroundings.</p>
 <p>Markdown source:</p>
 <pre><code class="language-markdown">::: aside &quot;Related information&quot;
@@ -328,11 +329,11 @@ This becomes a native `aside` element.
 :::
 </code></pre>
 <p>Rendered result:</p>
-<aside class="aside border rounded p-3 my-4" aria-labelledby="jidaikobo-aside-351-label">
-<p id="jidaikobo-aside-351-label" class="aside-label">Related information</p>
+<aside class="aside border rounded p-3 my-4" aria-label="Related information">
+<p class="aside-label">Related information</p>
 <p>This becomes a native <code>aside</code> element.</p>
 </aside>
-<h3>Disclosure with details<a id="content-disclosure-with-details" href="#content-disclosure-with-details" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<h3 id="content-disclosure-with-details">Disclosure with details<a aria-label="Disclosure with details" href="#content-disclosure-with-details" class="heading-permalink" title="Permalink">¶</a></h3>
 <p>The title becomes a native <code>summary</code>, and the body remains structured
 Markdown. Without a title, the summary defaults to <code>Details</code>. Browsers provide
 the disclosure behavior; its presentation depends on the browser and the CSS
@@ -351,7 +352,7 @@ used by the application.</p>
 <li>The second detail</li>
 </ul>
 </details>
-<h3>Nested containers<a id="content-nested-containers" href="#content-nested-containers" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h3>
+<h3 id="content-nested-containers">Nested containers<a aria-label="Nested containers" href="#content-nested-containers" class="heading-permalink" title="Permalink">¶</a></h3>
 <p>Use a longer fence for the outer container:</p>
 <pre><code class="language-markdown">:::: aside &quot;Outer container&quot;
 ::: note info &quot;Inner note&quot;
@@ -359,7 +360,7 @@ Nested content.
 :::
 ::::
 </code></pre>
-<h2>Accessibility and Security Notes<a id="content-accessibility-and-security-notes" href="#content-accessibility-and-security-notes" class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h2>
+<h2 id="content-accessibility-and-security-notes">Accessibility and Security Notes<a aria-label="Accessibility and Security Notes" href="#content-accessibility-and-security-notes" class="heading-permalink" title="Permalink">¶</a></h2>
 <ul>
 <li>Do not rely on color alone to distinguish note variants; keep their visible
 labels meaningful.</li>

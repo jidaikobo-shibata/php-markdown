@@ -55,9 +55,10 @@ class MarkdownExtra
 
     private static function createConverter(): MarkdownConverter
     {
-        $options = MarkdownOptions::defaults()
-            ->withBaseUrl(self::$targetUrl)
-            ->withDocumentRoot(self::$replacePath);
+        $options = MarkdownOptions::forCompatibilityApi(
+            self::$targetUrl,
+            self::$replacePath
+        );
 
         return new MarkdownConverter($options);
     }

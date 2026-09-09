@@ -31,14 +31,14 @@ final class TableProcessor
         }
 
         foreach ($nodes as $node) {
-            if ($node instanceof TableRow) {
-                $this->processLegacyCaptionRow($node);
+            if ($node instanceof Table) {
+                $this->processLeadingCaption($node);
             }
         }
 
         foreach ($nodes as $node) {
-            if ($node instanceof Table) {
-                $this->processLeadingCaption($node);
+            if ($node instanceof TableRow) {
+                $this->processLegacyCaptionRow($node);
             }
         }
     }
@@ -63,13 +63,18 @@ final class TableProcessor
             return;
         }
 
-        $firstCell = $row->firstChild();
-        if (! $firstCell instanceof TableCell || ! $this->removeLeadingColon($firstCell)) {
+        $table = $section->parent();
+        if (
+            ! $table instanceof Table
+            || $table->firstChild() instanceof TableCaption
+            || $row->next() !== null
+            || ! $this->hasOnlyEmptyCellsAfterFirst($row)
+        ) {
             return;
         }
 
-        $table = $section->parent();
-        if (! $table instanceof Table || $table->firstChild() instanceof TableCaption) {
+        $firstCell = $row->firstChild();
+        if (! $firstCell instanceof TableCell || ! $this->removeLeadingColon($firstCell)) {
             return;
         }
 
@@ -142,14 +147,13 @@ final class TableProcessor
 
     private function firstTextDescendant(Node $node): ?Text
     {
-        foreach ($node->children() as $child) {
+        $child = $node->firstChild();
+        while ($child !== null) {
             if ($child instanceof Text) {
                 return $child;
             }
-            $text = $this->firstTextDescendant($child);
-            if ($text !== null) {
-                return $text;
-            }
+
+            $child = $child->firstChild();
         }
 
         return null;
@@ -157,18 +161,32 @@ final class TableProcessor
 
     private function lastTextDescendant(Node $node): ?Text
     {
-        $children = array_reverse(iterator_to_array($node->children(), false));
-        foreach ($children as $child) {
+        $child = $node->lastChild();
+        while ($child !== null) {
             if ($child instanceof Text) {
                 return $child;
             }
-            $text = $this->lastTextDescendant($child);
-            if ($text !== null) {
-                return $text;
-            }
+
+            $child = $child->lastChild();
         }
 
         return null;
+    }
+
+    private function hasOnlyEmptyCellsAfterFirst(TableRow $row): bool
+    {
+        $cell = $row->firstChild();
+        if ($cell === null) {
+            return false;
+        }
+
+        for ($cell = $cell->next(); $cell !== null; $cell = $cell->next()) {
+            if (! $cell instanceof TableCell || $cell->firstChild() !== null) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private function setAttribute(Node $node, string $name, string $value): void

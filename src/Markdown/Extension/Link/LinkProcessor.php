@@ -50,12 +50,16 @@ final class LinkProcessor
             return;
         }
 
+        $extension = strtolower((string) pathinfo($localPath, PATHINFO_EXTENSION));
+        if ($extension === '') {
+            return;
+        }
+
         $size = filesize($localPath);
         if ($size === false) {
             return;
         }
 
-        $extension = strtolower((string) pathinfo($localPath, PATHINFO_EXTENSION));
         $link->appendChild(new Text(sprintf(
             ' (%s, %s)',
             $extension,

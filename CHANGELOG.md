@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+### Added
+
+- Add immutable options for selecting the raw HTML policy and registering
+  additional League CommonMark extensions and configuration.
+
+### Changed
+
+- Escape raw HTML by default in the recommended API while retaining `allow`
+  behavior in the version 1 compatibility facade.
+- Make heading permalinks keyboard focusable and give them the corresponding
+  heading text as an accessible name.
+- Restrict legacy table-caption rows to a final row whose remaining cells are
+  empty, and require row-header markers to be in the final inline content.
+- Keep extensionless local-file links free of file metadata.
+- Label notes and asides without generated IDs so independently converted
+  fragments can be combined without ID collisions.
+- Validate and normalize base URLs and document roots in the recommended API,
+  while keeping compatibility setters non-throwing.
+
+### Removed
+
+- Remove the unused `michelf/php-markdown` development dependency from the
+  version 2 branch.
+
 ## 2.0.0-beta.2 - 2026-09-08
 
 ### Added

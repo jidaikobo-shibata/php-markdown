@@ -452,3 +452,33 @@
 - beta.2リリースに関する未完了事項はなし。
 - 次にやるとよいこと: 実利用側でbeta.2を評価し、安定版までに必要な記法や
   アクセシビリティ上の調整を整理する。
+
+### beta.2後の監査指摘対応
+
+- 推奨APIの生HTML既定値を`escape`へ変更し、`withHtmlInput()`で`escape`・`strip`・
+  `allow`を変換器ごとに選べるようにした。互換APIはv1互換のため`allow`を明示する。
+- `withLeagueExtension()`と`withLeagueConfiguration()`を追加し、共通のEnvironment
+  FactoryからJidaikobo拡張と利用側のLeague拡張・設定を組み立てるよう整理した。
+  設定内の連想配列は再帰マージし、allowlist等のリストは丸ごと置換する。
+- 旧caption行は本文の最終行かつ第2セル以降が空の場合だけ認識し、先行captionが
+  ある場合はコロンを変更しないようにした。行見出しの末尾判定も、AST上で実際に
+  最後となるインライン内容だけを辿るようにした。
+- 見出しパーマリンクを通常のキーボードフォーカス対象とし、見出し本文を
+  `aria-label`に設定した。フラグメントIDは見出し要素自体へ付ける。
+- note・asideは生成IDと`aria-labelledby`を使わず、見えるタイトルと同文の
+  `aria-label`で命名し、別々に変換したHTML断片を結合してもIDが衝突しないようにした。
+- 拡張子のないローカルファイルは形式・容量を追記せず、通常リンクのままとした。
+- v2で未使用だった`michelf/php-markdown`を開発依存とロック・vendorから削除した。
+- README、移行ガイド、CHANGELOG、英日チートシートを更新し、4つの静的HTMLを再生成した。
+- 理由: 信頼できないMarkdownに対する安全な既定値を提供し、利用側の拡張余地を残しつつ、
+  誤変換、アクセシビリティ上の操作不能、生成ID衝突をvendor改変なしで解消するため。
+- 回帰テスト、静的HTML同期、PSR-12、PHP 7.4互換検査、PHPStan level 5、Composer
+  strict validate・audit、`git diff --check`が成功した。5つの動的サンプルと4つの
+  静的チートシートはPHP組み込みサーバーでHTTP 200を確認し、サーバーは終了した。
+- 推奨APIの`baseUrl`は空文字またはuserinfo・query・fragmentを持たない絶対HTTP(S)
+  URLに限定した。`documentRoot`は空文字または既存の絶対ディレクトリに限定し、
+  `realpath()`後にファイルシステムルートとなる値を拒否する。互換APIは専用の内部生成
+  経路を使い、従来の設定値で新たな例外を投げない。
+- 未完了: 利用者によるブラウザーとキーボードでのパーマリンク確認。
+- 次にやるとよいこと: 実案件の環境変数から渡されるbase URLとdocument rootが新しい
+  条件を満たすことを確認し、必要なら移行時のエラーハンドリング例を追加する。

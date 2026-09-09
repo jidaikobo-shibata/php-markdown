@@ -56,11 +56,10 @@ final class ContainerRenderer implements NodeRendererInterface
         $contents = $separator;
 
         if ($node->getTitle() !== '') {
-            $labelId = 'jidaikobo-' . $type . '-' . (string) $node->getStartLine() . '-label';
-            $attributes['aria-labelledby'] = $labelId;
+            $attributes['aria-label'] = $node->getTitle();
             $contents .= new HtmlElement(
                 'p',
-                ['id' => $labelId, 'class' => $type . '-label'],
+                ['class' => $type . '-label'],
                 Xml::escape($node->getTitle())
             );
             $contents .= $separator;

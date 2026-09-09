@@ -196,9 +196,9 @@ Rendered result:
 
 ## Heading Permalinks and Table of Contents
 
-Heading permalinks are generated automatically for levels 1 through 6. The
-permalink symbol is hidden from assistive technology and removed from the tab
-order, while each heading remains a valid fragment destination.
+Heading permalinks are generated automatically for levels 1 through 6. Each
+symbol is a keyboard-focusable link whose accessible name is the corresponding
+heading text, while each heading remains a valid fragment destination.
 
 A table of contents is generated only where this placeholder occurs:
 
@@ -285,7 +285,8 @@ Rendered result:
 
 When the converter has a base URL, a destination beginning with one `/` is
 completed from that URL. When it also resolves safely below the configured
-document root, non-image file links receive their type and size.
+document root, non-image files with an extension receive their type and size.
+Extensionless files remain ordinary links.
 
 Markdown source:
 

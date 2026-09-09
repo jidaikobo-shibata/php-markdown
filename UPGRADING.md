@@ -60,6 +60,10 @@ Version 2 continues to support the documented Jidaikobo syntax and behavior:
 The compatibility facade now delegates to the same League CommonMark engine
 as the new API. It does not contain or emulate the old Michelf parser.
 
+The compatibility facade retains raw HTML with the `allow` policy. The
+recommended API uses the safer `escape` policy by default. This intentional
+difference matters when the same Markdown is compared through both APIs.
+
 The leading emphasized-caption syntax is new in version 2. The table-row
 caption syntax from version 1 remains supported, so existing Markdown does not
 need to be rewritten immediately.
@@ -106,6 +110,29 @@ The method names map as follows:
 
 The new API is preferable when an application renders multiple sites, runs
 in a long-lived PHP process, or needs isolated test configuration.
+
+Unlike the compatibility setters, the new API validates URL and filesystem
+options immediately. A base URL must be an absolute HTTP(S) URL without user
+information, a query, or a fragment. A document root must be an existing
+absolute directory and must not resolve to the filesystem root. Invalid input
+throws `InvalidArgumentException`; an empty string clears the option. Review
+configuration assembled from environment variables before migrating a call.
+
+It also supports per-converter HTML policy and additional League extensions:
+
+```php
+use League\CommonMark\Extension\Footnote\FootnoteExtension;
+
+$options = MarkdownOptions::defaults()
+    ->withHtmlInput(MarkdownOptions::HTML_INPUT_STRIP)
+    ->withLeagueExtension(new FootnoteExtension())
+    ->withLeagueConfiguration([
+        'table_of_contents' => ['max_heading_level' => 5],
+    ]);
+```
+
+Available HTML policies are `HTML_INPUT_ESCAPE` (the new API default),
+`HTML_INPUT_STRIP`, and `HTML_INPUT_ALLOW`.
 
 ## Intentional compatibility breaks
 
@@ -180,8 +207,16 @@ base URL. The resolved canonical file must be readable and contained by the
 configured document root. Encoded traversal, host-prefix lookalikes, and
 symlink escapes do not expose file metadata.
 
-Raw HTML remains enabled for compatibility. Continue to sanitize rendered HTML
-when Markdown comes from an untrusted source.
+The recommended API also canonicalizes the configured document root and
+rejects `/` (or another platform's filesystem root), including paths and
+symlinks which resolve to it. The compatibility facade keeps permissive
+version 1 setters so existing calls do not begin throwing exceptions.
+
+The recommended API escapes raw HTML by default. The compatibility facade
+retains version 1's raw-HTML `allow` behavior, so its rendered output still
+requires application-appropriate sanitization when Markdown is untrusted.
+Applications can select `escape`, `strip`, or `allow` per converter through
+`MarkdownOptions::withHtmlInput()`.
 
 ## Version 1 maintenance and documentation
 

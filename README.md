@@ -66,6 +66,59 @@ Both options are optional. Without a base URL, root-relative links are not
 completed. File metadata is added only when both a base URL and document root
 allow the URL to be resolved safely.
 
+The new API validates these values when the corresponding `with...()` method
+is called:
+
+- `withBaseUrl()` accepts an empty string, or an absolute HTTP(S) URL with a
+  host and without user information, a query, or a fragment. Trailing slashes
+  are removed. Whitespace, control characters, and backslashes are rejected.
+- `withDocumentRoot()` accepts an empty string, or an existing absolute
+  directory other than a filesystem root. It is canonicalized with
+  `realpath()`, so a symlink or `..` path resolving to the filesystem root is
+  also rejected.
+
+Invalid values throw `InvalidArgumentException`. Passing an empty string
+clears that option. The version 1 compatibility facade intentionally keeps its
+previous permissive setters and does not introduce these new exceptions.
+
+### HTML input and League CommonMark configuration
+
+The recommended API escapes raw HTML by default. Choose a policy explicitly
+when an application has different requirements:
+
+```php
+$safeOptions = MarkdownOptions::defaults();
+
+$stripHtmlOptions = MarkdownOptions::defaults()
+    ->withHtmlInput(MarkdownOptions::HTML_INPUT_STRIP);
+
+$trustedHtmlOptions = MarkdownOptions::defaults()
+    ->withHtmlInput(MarkdownOptions::HTML_INPUT_ALLOW);
+```
+
+Use `HTML_INPUT_ALLOW` only for trusted Markdown, or sanitize the converted
+HTML with a policy appropriate to the application before displaying it.
+
+Additional League CommonMark extensions and their configuration can be added
+without replacing the Jidaikobo environment:
+
+```php
+use League\CommonMark\Extension\Footnote\FootnoteExtension;
+
+$options = MarkdownOptions::defaults()
+    ->withLeagueExtension(new FootnoteExtension())
+    ->withLeagueConfiguration([
+        'table_of_contents' => [
+            'max_heading_level' => 5,
+        ],
+    ]);
+```
+
+Repeated calls append extensions and recursively merge configuration maps;
+list values such as attribute allowlists are replaced rather than appended.
+The dedicated `withHtmlInput()` value takes precedence over an `html_input`
+key in generic League configuration.
+
 ## Version 1 compatibility API
 
 The main version 1 entry point remains available in version 2:
@@ -93,7 +146,8 @@ $html = $parser->transform($markdown);
 The compatibility facade and the recommended API use the same League
 CommonMark converter and Jidaikobo extension internally. New applications
 should prefer `MarkdownConverter`, because the static compatibility settings
-are shared process state.
+are shared process state. The facade also retains version 1's raw-HTML
+`allow` behavior; use the recommended API for a safe default.
 
 Compatibility has deliberate limits. Version 2 does not preserve:
 
@@ -116,10 +170,12 @@ presentations in both languages; viewing them does not execute PHP.
 
 ## Enabled League extensions
 
-Heading permalinks are enabled for heading levels 1 through 6. Add `[TOC]` on
-its own line to generate a table of contents at that position. The table of
-contents includes heading levels 2 through 4 and is limited to 100 entries per
-document. A document without the placeholder does not receive a table of
+Heading permalinks are enabled for heading levels 1 through 6. Each permalink
+is a keyboard-focusable link whose accessible name is the corresponding
+heading text; the fragment ID is applied to the heading itself. Add `[TOC]`
+on its own line to generate a table of contents at that position. The table
+of contents includes heading levels 2 through 4 and is limited to 100 entries
+per document. A document without the placeholder does not receive a table of
 contents automatically.
 
 ## Custom Markdown syntax
@@ -138,15 +194,16 @@ This note can contain **normal Markdown**, lists, links, and code blocks.
 ```
 
 ```html
-<div class="note note-info" role="note" aria-labelledby="jidaikobo-note-1-label">
-  <p id="jidaikobo-note-1-label" class="note-label">Reference information</p>
+<div class="note note-info" role="note" aria-label="Reference information">
+  <p class="note-label">Reference information</p>
   <p>This note can contain <strong>normal Markdown</strong>, lists, links, and code blocks.</p>
 </div>
 ```
 
-The quoted visible title is optional. When present, it labels the note with
-`aria-labelledby`. Use an `aside` fence for content tangentially related to
-the surrounding content:
+The quoted visible title is optional. When present, the same text is displayed
+and used as the container's `aria-label`. This avoids generated ID collisions
+when independently converted fragments are combined. Use an `aside` fence for
+content tangentially related to the surrounding content:
 
 ```markdown
 ::: aside "Related information"
@@ -197,7 +254,8 @@ paragraph followed by a table. A blank line keeps the emphasized paragraph
 separate and prevents caption conversion.
 
 The version 1 syntax, where a table row begins with a colon, remains supported
-for backward compatibility:
+for backward compatibility. To avoid consuming ordinary data, it is recognized
+only on the final body row and only when every cell after the first is empty:
 
 ```markdown
 | Name  | Value |
@@ -249,7 +307,9 @@ its extension and human-readable size are appended to the link text:
 
 Query strings and fragments do not interfere with local file resolution.
 Common image types, including SVG, WebP, and AVIF, do not receive a metadata
-suffix. Markdown images are not processed as download links.
+suffix. Extensionless files also remain ordinary links because no reliable
+file type can be displayed. Markdown images are not processed as download
+links.
 
 ### Root-relative links
 
@@ -266,10 +326,14 @@ remain unchanged.
   configured document root.
 - URL scheme, host, and port must match the configured base URL before local
   file metadata is read.
+- The new API rejects ambiguous base URLs and document roots which resolve to
+  the filesystem root.
 
-Raw HTML remains enabled for compatibility. Applications rendering untrusted
-Markdown should apply an HTML sanitization policy appropriate to their output
-context.
+The recommended API escapes raw HTML by default. The version 1 compatibility
+facade continues to allow raw HTML to avoid silently changing existing output.
+Applications using the facade with untrusted Markdown must sanitize the
+rendered HTML, or migrate that conversion to the recommended API and select
+the `escape` or `strip` policy.
 
 ## Browser examples
 

@@ -8,6 +8,7 @@ declare(strict_types=1);
 use Jidaikobo\MarkdownExtra;
 use Jidaikobo\Markdown\MarkdownConverter;
 use Jidaikobo\Markdown\MarkdownOptions;
+use League\CommonMark\Extension\Strikethrough\StrikethroughExtension;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -25,6 +26,18 @@ function assertNotContains(string $needle, string $haystack, string $message): v
         fwrite(STDERR, "FAIL: {$message}\nUnexpected: {$needle}\n");
         exit(1);
     }
+}
+
+function assertInvalidArgument(callable $operation, string $message): void
+{
+    try {
+        $operation();
+    } catch (InvalidArgumentException $exception) {
+        return;
+    }
+
+    fwrite(STDERR, "FAIL: {$message}\n");
+    exit(1);
 }
 
 function renderExample(string $path): string
@@ -175,6 +188,64 @@ assertNotContains(
     'Emphasized text separated by a blank line must not become a table caption.'
 );
 
+$legacyCaptionBoundaries = <<<'MARKDOWN'
+| Key | Value |
+| --- | --- |
+| :literal | kept |
+| :second | kept2 |
+MARKDOWN;
+
+$legacyCaptionBoundaryHtml = MarkdownExtra::defaultTransform($legacyCaptionBoundaries);
+assertNotContains(
+    '<caption>',
+    $legacyCaptionBoundaryHtml,
+    'A normal multi-cell data row beginning with a colon must not become a caption.'
+);
+assertContains(
+    '<td>:literal</td>',
+    $legacyCaptionBoundaryHtml,
+    'A colon in a non-final data row must remain unchanged.'
+);
+assertContains(
+    '<td>:second</td>',
+    $legacyCaptionBoundaryHtml,
+    'A final row with another non-empty cell must remain data.'
+);
+
+$preferredCaption = <<<'MARKDOWN'
+*Preferred caption*
+| Key | Value |
+| --- | --- |
+| :literal | |
+MARKDOWN;
+
+$preferredCaptionHtml = MarkdownExtra::defaultTransform($preferredCaption);
+assertContains('<caption>Preferred caption</caption>', $preferredCaptionHtml, 'The preferred caption should win.');
+assertContains(
+    '<td>:literal</td>',
+    $preferredCaptionHtml,
+    'A legacy-looking row must not be mutated after a caption already exists.'
+);
+
+$rowHeaderBoundaries = <<<'MARKDOWN'
+| Label | Value |
+| --- | --- |
+| Row: `code` | ordinary |
+| **Actual:** | header |
+MARKDOWN;
+
+$rowHeaderBoundaryHtml = MarkdownExtra::defaultTransform($rowHeaderBoundaries);
+assertContains(
+    '<td>Row: <code>code</code></td>',
+    $rowHeaderBoundaryHtml,
+    'A colon before a later inline-code node must not mark a row heading.'
+);
+assertContains(
+    '<th scope="row"><strong>Actual</strong></th>',
+    $rowHeaderBoundaryHtml,
+    'A colon in the genuinely final inline content should mark a row heading.'
+);
+
 $notStandalone = <<<'MARKDOWN'
 ![Sample](files/sample-image.svg) trailing text
 *This remains emphasis*
@@ -270,10 +341,10 @@ assertContains(
     'Table-of-contents links should target generated heading fragments.'
 );
 assertContains(
-    '<h2>First section<a id="content-first-section" href="#content-first-section" ' .
-    'class="heading-permalink" aria-hidden="true" tabindex="-1" title="Permalink">¶</a></h2>',
+    '<h2 id="content-first-section">First section<a aria-label="First section" ' .
+    'href="#content-first-section" class="heading-permalink" title="Permalink">¶</a></h2>',
     $navigationHtml,
-    'Headings should receive an accessible, non-tabbable permalink marker.'
+    'Heading permalinks should be keyboard focusable and have a meaningful accessible name.'
 );
 assertNotContains('[TOC]', $navigationHtml, 'A replaced TOC placeholder must not remain in the output.');
 
@@ -328,14 +399,14 @@ MARKDOWN;
 
 $containerHtml = MarkdownExtra::defaultTransform($containers);
 assertContains(
-    '<div class="note note-info" role="note" aria-labelledby="jidaikobo-note-1-label">',
+    '<div class="note note-info" role="note" aria-label="Reference information">',
     $containerHtml,
     'An info note should use the note role and an accessible name.'
 );
 assertContains(
-    '<p id="jidaikobo-note-1-label" class="note-label">Reference information</p>',
+    '<p class="note-label">Reference information</p>',
     $containerHtml,
-    'A note title should remain visible and label the note.'
+    'A note title should remain visible without requiring a generated ID.'
 );
 assertContains(
     '<a href="https://example.com/note">link</a> and <strong>strong text</strong>',
@@ -354,7 +425,7 @@ assertContains(
 );
 assertNotContains('role="alert"', $containerHtml, 'A static alert variant must not become an ARIA alert.');
 assertContains(
-    '<aside class="aside" aria-labelledby=',
+    '<aside class="aside" aria-label="Related information">',
     $containerHtml,
     'Aside syntax should render a native aside with an accessible name.'
 );
@@ -382,6 +453,90 @@ assertContains(
     'Details without a title should use a usable default summary.'
 );
 
+$combinedNotes = $newConverter->convert("::: note info \"Repeated\"\nOne\n:::\n")
+    . $newConverter->convert("::: note info \"Repeated\"\nTwo\n:::\n");
+assertNotContains(
+    'id="jidaikobo-note-',
+    $combinedNotes,
+    'Separately converted note fragments must not create colliding generated IDs.'
+);
+if (substr_count($combinedNotes, 'aria-label="Repeated"') !== 2) {
+    fwrite(STDERR, "FAIL: Each combined note should retain its accessible name.\n");
+    exit(1);
+}
+
+$extensionlessOptions = MarkdownOptions::defaults()
+    ->withBaseUrl('https://example.com')
+    ->withDocumentRoot(dirname(__DIR__));
+$extensionlessHtml = (new MarkdownConverter($extensionlessOptions))->convert('[License](/LICENSE)');
+assertContains(
+    '<a href="https://example.com/LICENSE">License</a>',
+    $extensionlessHtml,
+    'An extensionless local file should remain an ordinary link.'
+);
+assertNotContains('License (,', $extensionlessHtml, 'Empty file types must not be displayed.');
+
+$rawHtml = '<script>alert(document.domain)</script>';
+assertContains(
+    '&lt;script&gt;alert(document.domain)&lt;/script&gt;',
+    (new MarkdownConverter())->convert($rawHtml),
+    'The new API should escape raw HTML by default.'
+);
+assertContains(
+    $rawHtml,
+    MarkdownExtra::defaultTransform($rawHtml),
+    'The compatibility API should continue to allow raw HTML.'
+);
+assertNotContains(
+    '<script>',
+    (new MarkdownConverter(
+        MarkdownOptions::defaults()->withHtmlInput(MarkdownOptions::HTML_INPUT_STRIP)
+    ))->convert($rawHtml),
+    'The new API should allow applications to strip raw HTML.'
+);
+assertContains(
+    $rawHtml,
+    (new MarkdownConverter(
+        MarkdownOptions::defaults()->withHtmlInput(MarkdownOptions::HTML_INPUT_ALLOW)
+    ))->convert($rawHtml),
+    'The new API should allow trusted applications to opt in to raw HTML.'
+);
+
+try {
+    MarkdownOptions::defaults()->withHtmlInput('unsupported');
+    fwrite(STDERR, "FAIL: Unsupported raw HTML policies must be rejected.\n");
+    exit(1);
+} catch (InvalidArgumentException $exception) {
+    assertContains(
+        'Unsupported html_input value',
+        $exception->getMessage(),
+        'The option error should be clear.'
+    );
+}
+
+$customizedOptions = MarkdownOptions::defaults()
+    ->withLeagueExtension(new StrikethroughExtension())
+    ->withLeagueConfiguration([
+        'heading_permalink' => ['min_heading_level' => 3],
+        'attributes' => ['allow' => ['id']],
+    ]);
+$customizedHtml = (new MarkdownConverter($customizedOptions))->convert(
+    "## Level two\n\n~~removed~~\n\n[Link](https://example.com){#kept .removed lang=ja}\n"
+);
+assertContains('<del>removed</del>', $customizedHtml, 'Applications should be able to add League extensions.');
+assertContains(
+    '<a id="kept" href="https://example.com">Link</a>',
+    $customizedHtml,
+    'Allowed attributes should remain.'
+);
+assertNotContains('class="removed"', $customizedHtml, 'Configuration lists must replace rather than append.');
+assertNotContains('lang="ja"', $customizedHtml, 'Narrowed attribute allowlists must not retain default entries.');
+assertNotContains(
+    'heading-permalink',
+    $customizedHtml,
+    'Applications should be able to customize League extension configuration.'
+);
+
 $nestedContainers = <<<'MARKDOWN'
 :::: aside "Outer container"
 ::: note info "Inner note"
@@ -399,11 +554,59 @@ assertContains(
 );
 
 $defaults = MarkdownOptions::defaults();
-$configured = $defaults->withBaseUrl('https://example.com');
-if ($defaults->getBaseUrl() !== '' || $configured->getBaseUrl() !== 'https://example.com') {
+$configured = $defaults
+    ->withBaseUrl('https://example.com/base///')
+    ->withDocumentRoot(__DIR__ . '/../examples/');
+if (
+    $defaults->getBaseUrl() !== ''
+    || $configured->getBaseUrl() !== 'https://example.com/base'
+    || $configured->getDocumentRoot() !== realpath(__DIR__ . '/../examples')
+) {
     fwrite(STDERR, "FAIL: MarkdownOptions must be immutable.\n");
     exit(1);
 }
+
+$invalidBaseUrls = [
+    'example.com',
+    '//example.com',
+    'ftp://example.com',
+    'https://user@example.com',
+    'https://example.com?tenant=1',
+    'https://example.com#section',
+    'https://example.com\\path',
+    " https://example.com",
+];
+foreach ($invalidBaseUrls as $invalidBaseUrl) {
+    assertInvalidArgument(
+        static function () use ($invalidBaseUrl): void {
+            MarkdownOptions::defaults()->withBaseUrl($invalidBaseUrl);
+        },
+        'The new API must reject ambiguous or non-HTTP base URLs.'
+    );
+}
+
+$invalidDocumentRoots = [
+    'relative/public',
+    DIRECTORY_SEPARATOR,
+    dirname(__DIR__) . '/definitely-missing-document-root',
+    DIRECTORY_SEPARATOR . 'tmp/..',
+];
+foreach ($invalidDocumentRoots as $invalidDocumentRoot) {
+    assertInvalidArgument(
+        static function () use ($invalidDocumentRoot): void {
+            MarkdownOptions::defaults()->withDocumentRoot($invalidDocumentRoot);
+        },
+        'The new API must reject unsafe or ambiguous document roots.'
+    );
+}
+
+MarkdownExtra::setTargetUrl('relative-base?tenant=1');
+MarkdownExtra::setReplacePath('relative-root');
+assertContains(
+    '<p>Compatibility settings</p>',
+    MarkdownExtra::defaultTransform('Compatibility settings'),
+    'Legacy configuration values must not start throwing new exceptions.'
+);
 
 $_SERVER['SERVER_PORT'] = 8000;
 $compatibilityExample = renderExample(__DIR__ . '/../examples/index.php');
