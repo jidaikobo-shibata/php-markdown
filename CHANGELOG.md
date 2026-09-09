@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 
 - Add immutable options for selecting the raw HTML policy and registering
   additional League CommonMark extensions and configuration.
+- Add CSS-free English and Japanese cheat-sheet fragments with a PSR-4 loader
+  API and configurable sample-asset base URL for CMS integration.
 
 ### Changed
 

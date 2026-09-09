@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 use Jidaikobo\MarkdownExtra;
+use Jidaikobo\Markdown\CheatSheet;
 use Jidaikobo\Markdown\MarkdownConverter;
 use Jidaikobo\Markdown\MarkdownOptions;
 use League\CommonMark\Extension\Strikethrough\StrikethroughExtension;
@@ -38,6 +39,26 @@ function assertInvalidArgument(callable $operation, string $message): void
 
     fwrite(STDERR, "FAIL: {$message}\n");
     exit(1);
+}
+
+function assertFragmentLinksResolve(string $html, string $message): void
+{
+    preg_match_all('/\bid="([^"]+)"/u', $html, $idMatches);
+    preg_match_all('/\bhref="#([^"]+)"/u', $html, $linkMatches);
+
+    $ids = $idMatches[1];
+    if (count($ids) !== count(array_unique($ids))) {
+        fwrite(STDERR, "FAIL: {$message} Duplicate IDs were found.\n");
+        exit(1);
+    }
+
+    $knownIds = array_fill_keys($ids, true);
+    foreach ($linkMatches[1] as $target) {
+        if (!isset($knownIds[$target])) {
+            fwrite(STDERR, "FAIL: {$message} Missing fragment target: {$target}\n");
+            exit(1);
+        }
+    }
 }
 
 function renderExample(string $path): string
@@ -618,6 +639,84 @@ $englishPicoCheatSheet = readRequiredFile(__DIR__ . '/../examples/cheatsheet-pic
 $japanesePicoCheatSheet = readRequiredFile(__DIR__ . '/../examples/cheatsheet-pico-ja.html');
 $englishBootstrapCheatSheet = readRequiredFile(__DIR__ . '/../examples/cheatsheet-bootstrap.html');
 $japaneseBootstrapCheatSheet = readRequiredFile(__DIR__ . '/../examples/cheatsheet-bootstrap-ja.html');
+$englishCheatSheetFragment = CheatSheet::getHtml(CheatSheet::LANGUAGE_ENGLISH);
+$japaneseCheatSheetFragment = CheatSheet::getHtml(CheatSheet::LANGUAGE_JAPANESE);
+if (
+    readRequiredFile(__DIR__ . '/../resources/cheatsheet/files/download.txt')
+        !== readRequiredFile(__DIR__ . '/../examples/files/download.txt')
+    || readRequiredFile(__DIR__ . '/../resources/cheatsheet/files/sample-image.svg')
+        !== readRequiredFile(__DIR__ . '/../examples/files/sample-image.svg')
+) {
+    fwrite(STDERR, "FAIL: Reusable and preview cheat-sheet sample assets must remain synchronized.\n");
+    exit(1);
+}
+assertFragmentLinksResolve($englishCheatSheetFragment, 'The English cheat-sheet fragment must be self-consistent.');
+assertFragmentLinksResolve($japaneseCheatSheetFragment, 'The Japanese cheat-sheet fragment must be self-consistent.');
+assertContains(
+    '<p><strong>Contents</strong></p>',
+    $englishCheatSheetFragment,
+    'The reusable English fragment should begin with its contents label.'
+);
+if (strpos($japaneseCheatSheetFragment, '<p><strong>目次</strong></p>') !== 0) {
+    fwrite(STDERR, "FAIL: The reusable Japanese fragment must begin at its contents label.\n");
+    exit(1);
+}
+assertNotContains('<main', $japaneseCheatSheetFragment, 'Reusable fragments must not choose a page landmark.');
+assertNotContains('<style', $japaneseCheatSheetFragment, 'Reusable fragments must not contain presentation CSS.');
+assertNotContains('<h1', $japaneseCheatSheetFragment, 'Reusable fragments must omit the preview-page title.');
+assertContains(
+    'href="files/download.txt">小さなテキストファイル (txt, 100 B)</a>',
+    $japaneseCheatSheetFragment,
+    'Reusable fragments should use portable relative sample-asset URLs by default.'
+);
+
+$prefixedCheatSheetFragment = CheatSheet::getHtml(
+    CheatSheet::LANGUAGE_JAPANESE,
+    '/cms-assets/php-markdown',
+    'cms-markdown-help'
+);
+assertContains(
+    'src="/cms-assets/php-markdown/files/sample-image.svg"',
+    $prefixedCheatSheetFragment,
+    'A CMS should be able to provide a root-relative sample-asset base URL.'
+);
+assertContains(
+    'href="/cms-assets/php-markdown/files/download.txt"',
+    $prefixedCheatSheetFragment,
+    'The sample-asset base URL should apply to downloadable examples.'
+);
+assertContains(
+    'id="cms-markdown-help-markdownの基本記法"',
+    $prefixedCheatSheetFragment,
+    'A CMS should be able to namespace fragment heading IDs.'
+);
+assertContains(
+    'href="#cms-markdown-help-markdownの基本記法"',
+    $prefixedCheatSheetFragment,
+    'TOC and permalink destinations should follow the configured heading ID prefix.'
+);
+assertFragmentLinksResolve(
+    $prefixedCheatSheetFragment,
+    'The namespaced cheat-sheet fragment must remain self-consistent.'
+);
+assertInvalidArgument(
+    static function (): void {
+        CheatSheet::getHtml('../ja');
+    },
+    'Cheat-sheet languages must be selected from an allowlist.'
+);
+assertInvalidArgument(
+    static function (): void {
+        CheatSheet::getHtml(CheatSheet::LANGUAGE_ENGLISH, 'javascript:alert(1)');
+    },
+    'Cheat-sheet asset bases must reject unsafe URL schemes.'
+);
+assertInvalidArgument(
+    static function (): void {
+        CheatSheet::getHtml(CheatSheet::LANGUAGE_ENGLISH, '', 'unsafe prefix');
+    },
+    'Cheat-sheet heading prefixes must not allow attribute injection.'
+);
 assertContains(
     'Jidaikobo MarkdownExtra 互換API表示確認',
     $compatibilityExample,

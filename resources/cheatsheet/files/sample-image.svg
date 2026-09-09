@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180" viewBox="0 0 320 180" role="img" aria-labelledby="title description">
+  <title id="title">青い四角のサンプル画像</title>
+  <desc id="description">薄い背景の中央に青い四角があります。</desc>
+  <rect width="320" height="180" fill="#f3f6fa"/>
+  <rect x="110" y="40" width="100" height="100" rx="8" fill="#075ea8"/>
+</svg>

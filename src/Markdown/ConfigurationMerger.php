@@ -9,10 +9,12 @@ final class ConfigurationMerger
     /**
      * Recursively merges configuration maps while replacing list values.
      *
-     * @param array<mixed> $base
-     * @param array<mixed> $overrides
+     * @template TKey of array-key
      *
-     * @return array<mixed>
+     * @param array<TKey, mixed> $base
+     * @param array<TKey, mixed> $overrides
+     *
+     * @return array<TKey, mixed>
      */
     public static function merge(array $base, array $overrides): array
     {
@@ -34,7 +36,7 @@ final class ConfigurationMerger
         return $base;
     }
 
-    /** @param array<mixed> $value */
+    /** @param array<array-key, mixed> $value */
     private static function isMap(array $value): bool
     {
         if ($value === []) {

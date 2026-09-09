@@ -5,6 +5,8 @@ This sheet places Markdown source next to the result rendered by
 syntax transformed; repository viewers which do not support these extensions
 will intentionally show the original text.
 
+<!-- jidaikobo-cheatsheet-content -->
+
 **Contents**
 
 [TOC]

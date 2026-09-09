@@ -65,8 +65,8 @@ final class LocalFileResolver
     }
 
     /**
-     * @param array<string, mixed> $target
-     * @param array<string, mixed> $candidate
+     * @param array<string, int|string> $target
+     * @param array<string, int|string> $candidate
      */
     private function hasSameOrigin(array $target, array $candidate): bool
     {
@@ -87,7 +87,7 @@ final class LocalFileResolver
         return $this->getPort($target) === $this->getPort($candidate);
     }
 
-    /** @param array<string, mixed> $url */
+    /** @param array<string, int|string> $url */
     private function getPort(array $url): ?int
     {
         if (isset($url['port'])) {

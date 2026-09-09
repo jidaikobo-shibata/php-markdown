@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Jidaikobo\Markdown\Extension\Container\Renderer;
 
+use Jidaikobo\Markdown\HtmlAttributes;
 use Jidaikobo\Markdown\Extension\Container\Node\Container;
 use League\CommonMark\Node\Node;
 use League\CommonMark\Renderer\ChildNodeRendererInterface;
@@ -41,7 +42,7 @@ final class ContainerRenderer implements NodeRendererInterface
     {
         $type = $node->getType();
         $classes = [$type];
-        $attributes = (array) $node->data->get('attributes');
+        $attributes = HtmlAttributes::fromNode($node);
 
         if ($type === Container::TYPE_NOTE) {
             $classes[] = 'note-' . $node->getVariant();
@@ -72,13 +73,13 @@ final class ContainerRenderer implements NodeRendererInterface
 
     /**
      * @param string[]                    $classes
-     * @param array<string, string|bool> $attributes
+     * @param array<string, array<string>|bool|string> $attributes
      *
-     * @return array<string, string|bool>
+     * @return array<string, array<string>|bool|string>
      */
     private function withClasses(Container $node, array $classes, ?array $attributes = null): array
     {
-        $attributes = $attributes ?? (array) $node->data->get('attributes');
+        $attributes = $attributes ?? HtmlAttributes::fromNode($node);
         $existing = $attributes['class'] ?? '';
         if (is_array($existing)) {
             $existing = implode(' ', $existing);

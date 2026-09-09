@@ -8,6 +8,8 @@ use Jidaikobo\Markdown\MarkdownOptions;
 
 $projectRoot = dirname(__DIR__);
 $checkOnly = in_array('--check', $argv, true);
+$contentMarker = '<!-- jidaikobo-cheatsheet-content -->';
+$fragmentBaseUrl = 'https://jidaikobo-cheatsheet.invalid';
 
 require $projectRoot . '/vendor/autoload.php';
 require $projectRoot . '/examples/Support/Bootstrap5ClassProcessor.php';
@@ -19,12 +21,14 @@ $documents = [
     'en' => [
         'source' => $projectRoot . '/docs/cheatsheet.md',
         'title' => 'Markdown Cheat Sheet',
+        'fragment_output' => $projectRoot . '/resources/cheatsheet/en.html',
         'pico_output' => $projectRoot . '/examples/cheatsheet-pico.html',
         'bootstrap_output' => $projectRoot . '/examples/cheatsheet-bootstrap.html',
     ],
     'ja' => [
         'source' => $projectRoot . '/docs/cheatsheet-ja.md',
         'title' => 'Markdownチートシート',
+        'fragment_output' => $projectRoot . '/resources/cheatsheet/ja.html',
         'pico_output' => $projectRoot . '/examples/cheatsheet-pico-ja.html',
         'bootstrap_output' => $projectRoot . '/examples/cheatsheet-bootstrap-ja.html',
     ],
@@ -33,6 +37,9 @@ $documents = [
 $options = MarkdownOptions::defaults()
     ->withBaseUrl('http://127.0.0.1:8000')
     ->withDocumentRoot($projectRoot . '/examples');
+$fragmentOptions = MarkdownOptions::defaults()
+    ->withBaseUrl($fragmentBaseUrl)
+    ->withDocumentRoot($projectRoot . '/resources/cheatsheet');
 
 foreach ($documents as $language => $document) {
     $markdown = file_get_contents($document['source']);
@@ -41,20 +48,46 @@ foreach ($documents as $language => $document) {
         exit(1);
     }
 
-    $picoConverter = new MarkdownConverter($options);
-    $picoContent = $picoConverter->convert($markdown);
-    $picoHtml = renderPage($language, $document['title'], 'pico', $picoContent);
+    $markdownParts = explode($contentMarker, $markdown);
+    if (count($markdownParts) !== 2) {
+        fwrite(STDERR, 'Expected exactly one reusable-content marker in ' . $document['source'] . "\n");
+        exit(1);
+    }
+
+    $preambleMarkdown = rtrim($markdownParts[0]) . "\n";
+    $fragmentMarkdown = ltrim($markdownParts[1]);
+
+    $picoPreamble = (new MarkdownConverter($options))->convert($preambleMarkdown);
+    $picoContent = (new MarkdownConverter($options))->convert($fragmentMarkdown);
+    $picoHtml = renderPage($language, $document['title'], 'pico', $picoPreamble . $picoContent);
     writePage($document['pico_output'], $picoHtml, $checkOnly);
 
-    $bootstrapConverter = Bootstrap5ExampleConverter::create($options);
-    $bootstrapContent = $bootstrapConverter->convert($markdown)->getContent();
-    $bootstrapHtml = renderPage($language, $document['title'], 'bootstrap', $bootstrapContent);
+    $bootstrapPreamble = Bootstrap5ExampleConverter::create($options)
+        ->convert($preambleMarkdown)
+        ->getContent();
+    $bootstrapContent = Bootstrap5ExampleConverter::create($options)
+        ->convert($fragmentMarkdown)
+        ->getContent();
+    $bootstrapHtml = renderPage(
+        $language,
+        $document['title'],
+        'bootstrap',
+        $bootstrapPreamble . $bootstrapContent
+    );
     writePage($document['bootstrap_output'], $bootstrapHtml, $checkOnly);
+
+    $fragmentContent = (new MarkdownConverter($fragmentOptions))->convert($fragmentMarkdown);
+    $fragmentContent = str_replace(
+        'href="' . $fragmentBaseUrl . '/files/',
+        'href="files/',
+        $fragmentContent
+    );
+    writePage($document['fragment_output'], $fragmentContent, $checkOnly);
 }
 
 fwrite(STDOUT, $checkOnly
-    ? "The four static cheat-sheet pages are up to date.\n"
-    : "Generated four static cheat-sheet pages.\n");
+    ? "The four static pages and two reusable fragments are up to date.\n"
+    : "Generated four static pages and two reusable fragments.\n");
 
 function renderPage(string $language, string $title, string $profile, string $content): string
 {

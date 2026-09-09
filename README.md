@@ -335,6 +335,57 @@ Applications using the facade with untrusted Markdown must sanitize the
 rendered HTML, or migrate that conversion to the recommended API and select
 the `escape` or `strip` policy.
 
+## Reusable cheat-sheet fragments
+
+The package includes CSS-free English and Japanese HTML fragments generated
+from the same Markdown sources as the preview pages. Each fragment begins with
+the visible contents label and ends with the final help section; it does not
+contain `html`, `body`, `main`, a page title, or CSS.
+
+Use the PSR-4 API to place the Japanese help inside a landmark chosen by the
+host application:
+
+```php
+use Jidaikobo\Markdown\CheatSheet;
+
+echo '<main>';
+echo CheatSheet::getHtml(CheatSheet::LANGUAGE_JAPANESE);
+echo '</main>';
+```
+
+English is available as `CheatSheet::LANGUAGE_ENGLISH`. Arbitrary language
+paths are not accepted. The returned HTML is a trusted, generated package
+resource; it does not convert application-supplied Markdown.
+
+Sample image and download URLs use the relative `files/` directory by default.
+A CMS may provide an absolute HTTP(S) URL or a single-slash root-relative URL
+for assets:
+
+```php
+$html = CheatSheet::getHtml(
+    CheatSheet::LANGUAGE_JAPANESE,
+    '/assets/php-markdown',
+    'cms-markdown-help'
+);
+```
+
+This changes sample URLs to `/assets/php-markdown/files/...`. Copy only the
+required files from `resources/cheatsheet/files/` to that public location;
+serving the Composer `vendor` directory directly is not recommended. The third
+argument namespaces heading IDs and their TOC and permalink destinations,
+avoiding collisions with an existing CMS page. It must begin with an ASCII
+letter and contain only letters, digits, `_`, or `-`.
+
+The generated HTML fragments and their small sample assets are also
+available together in `resources/cheatsheet/` for applications which do not
+call the PHP API. If the fragment language differs from the surrounding page,
+the host application should put it in an element with the appropriate `lang`
+attribute.
+
+Pico CSS and Bootstrap remain repository preview profiles. They help evaluate
+the output after cloning the repository, but they are not dependencies or
+presentation requirements of the reusable fragments.
+
 ## Browser examples
 
 Install dependencies and start PHP's built-in web server from the repository
