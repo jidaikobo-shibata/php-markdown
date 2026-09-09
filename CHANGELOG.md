@@ -4,12 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2.0.0 - 2026-09-09
+
 ### Added
 
 - Add immutable options for selecting the raw HTML policy and registering
   additional League CommonMark extensions and configuration.
 - Add CSS-free English and Japanese cheat-sheet fragments with a PSR-4 loader
-  API and configurable sample-asset base URL for CMS integration.
+  API, configurable sample-asset base URL, and heading ID prefix for CMS
+  integration.
 
 ### Changed
 
@@ -24,6 +27,7 @@ All notable changes to this project will be documented in this file.
   fragments can be combined without ID collisions.
 - Validate and normalize base URLs and document roots in the recommended API,
   while keeping compatibility setters non-throwing.
+- Validate CommonMark node attribute types before rendering custom elements.
 
 ### Removed
 
