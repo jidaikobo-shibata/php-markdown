@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-## 2.0.0 - 2026-09-09
+## 2.0.1 - 2026-09-09
 
 ### Added
 
@@ -33,6 +33,12 @@ All notable changes to this project will be documented in this file.
 
 - Remove the unused `michelf/php-markdown` development dependency from the
   version 2 branch.
+
+## 2.0.0 - 2026-09-07
+
+- Publish the initial League CommonMark-based version 2 snapshot. Development
+  subsequently continued through beta releases. Packagist retains this original
+  snapshot because published stable versions are immutable; use 2.0.1 or later.
 
 ## 2.0.0-beta.2 - 2026-09-08
 

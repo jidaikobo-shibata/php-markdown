@@ -10,7 +10,7 @@ captions, local file metadata, and root-relative URL completion. It uses a
 per-converter configuration API while retaining the primary version 1 API as
 a compatibility facade.
 
-> Version 2.0.0 is the current stable release and is developed on the `main`
+> Version 2.0.1 is the current stable release and is developed on the `main`
 > branch. See the [archived version 1 documentation](docs/README-v1.md) when
 > maintaining an existing version 1 installation.
 
@@ -446,7 +446,7 @@ composer compatibility
 ## Version support
 
 - Version 2 is developed on `main`.
-- The current stable version 2 release is `2.0.0`.
+- The current stable version 2 release is `2.0.1`.
 - Version 1 maintenance is isolated on the `1.x` branch.
 - Applications using `^1.0` do not update automatically to version 2.
 

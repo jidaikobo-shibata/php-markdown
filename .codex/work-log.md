@@ -542,3 +542,20 @@
 - 未完了: 最終検証、リリースコミット、annotated tag `v2.0.0`、mainとタグのpush、
   リモート参照とPackagist反映の確認。
 - 次にやること: 生成物同期と全検査を再実行し、リリースコミットとタグを作成してpushする。
+
+### v2.0.1へのリリース番号訂正
+
+- 安定版文書をコミット`a96d28a`として確定し、annotated tag `v2.0.0`とmainをGitHubへ
+  pushした。リモートのpeeled tagが`a96d28a`を指すことも確認した。
+- Packagistの公開メタデータを確認したところ、以前公開後に取り下げた`v2.0.0`が
+  旧コミット`762bee0`を参照する不変のスナップショットとして残っていた。
+- Packagistのstable version immutabilityにより同じタグ名の参照先は更新されないため、
+  現在の完成内容を新しいpatch release `v2.0.1`として公開することにした。
+- READMEの現在安定版とCHANGELOGの新規変更群を`2.0.1`へ訂正し、CHANGELOGには
+  Packagist上の`2.0.0`が旧スナップショットであることを記録した。
+- 理由: GitHubとComposer配布物の参照先不一致を避け、全利用者へ同一内容を安全に
+  配布するため。
+- 未完了: 再検証、訂正コミット、annotated tag `v2.0.1`、mainとタグのpush、
+  リモート参照とPackagist反映の確認。
+- 次にやること: 全検査後に`v2.0.1`をcommit・tag・pushし、Packagistが新しい
+  コミットを配布元として返すことを確認する。
